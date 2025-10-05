@@ -4,482 +4,74 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import dayjs from "dayjs";
+import { animate } from "motion";
 import {
-  cubicBezier,
   motion,
+  MotionValue,
   transform,
+  useAnimationFrame,
   useMotionTemplate,
   useMotionValue,
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import FieldImage, { useFieldImageFilterValues } from "./fieldImage";
-import { animate } from "motion";
-
-type TimelineState = {
-  time: [number, number];
-  colors: [string, string];
-  foreground: {
-    exposure: number;
-    contrast: number;
-    saturation: number;
-    temp: number;
-    tint: number;
-  };
-  background: {
-    exposure: number;
-    contrast: number;
-    saturation: number;
-    temp: number;
-    tint: number;
-  };
-};
-
-const timeline: TimelineState[] = [
-  {
-    time: [0, 6],
-    colors: ["#244669", "#132537"],
-    foreground: {
-      exposure: 0.446,
-      contrast: 1.562,
-      saturation: 0.592,
-      temp: -1,
-      tint: 1,
-    },
-    background: {
-      exposure: 0.446,
-      contrast: 1.562,
-      saturation: 0.592,
-      temp: -1,
-      tint: 1,
-    },
-  },
-  {
-    time: [6, 7],
-    colors: ["#C8DEEB", "#3D70B5"],
-    foreground: {
-      exposure: 0.85,
-      contrast: 1,
-      saturation: 0.725,
-      temp: -0.814,
-      tint: 0.343,
-    },
-    background: {
-      exposure: 0.519,
-      contrast: 1.509,
-      saturation: 0.793,
-      temp: -0.589,
-      tint: 0.611,
-    },
-  },
-  {
-    time: [7, 7.5],
-    colors: ["#74ECFA", "#74ECFA"],
-    foreground: { exposure: 1, contrast: 1, saturation: 1, temp: 0, tint: 0 },
-    background: {
-      exposure: 0.901,
-      contrast: 1,
-      saturation: 0.915,
-      temp: 0.143,
-      tint: 0,
-    },
-  },
-  {
-    time: [7.5, 19],
-    colors: ["#BDF8FF", "#5ED5EB"],
-    foreground: {
-      exposure: 1,
-      contrast: 1,
-      saturation: 1,
-      temp: 0.157,
-      tint: 0,
-    },
-    background: {
-      exposure: 1,
-      contrast: 1,
-      saturation: 1,
-      temp: 0.157,
-      tint: 0,
-    },
-  },
-  {
-    time: [19, 19.5],
-    colors: ["#FE7BAB", "#FE7BAB"],
-    foreground: {
-      exposure: 1.585,
-      contrast: 0.613,
-      saturation: 0.626,
-      temp: 1,
-      tint: -0.14,
-    },
-    background: {
-      exposure: 0.872,
-      contrast: 1,
-      saturation: 0.895,
-      temp: 0.153,
-      tint: 0,
-    },
-  },
-  {
-    time: [19.5, 20.5],
-    colors: ["#CBB2F3", "#326A97"],
-    foreground: {
-      exposure: 1.086,
-      contrast: 1.003,
-      saturation: 0.627,
-      temp: -0.648,
-      tint: 0.377,
-    },
-    background: {
-      exposure: 0.629,
-      contrast: 1.228,
-      saturation: 0.638,
-      temp: -0.115,
-      tint: 0.431,
-    },
-  },
-  {
-    time: [20.5, 21.5],
-    colors: ["#244669", "#1B2D42"],
-    foreground: {
-      exposure: 0.62,
-      contrast: 1.286,
-      saturation: 0.586,
-      temp: -0.843,
-      tint: 0.709,
-    },
-    background: {
-      exposure: 0.439,
-      contrast: 1.464,
-      saturation: 0.57,
-      temp: -1,
-      tint: 0.9,
-    },
-  },
-  {
-    time: [21.5, 24],
-    colors: ["#244669", "#132537"],
-    foreground: {
-      exposure: 0.446,
-      contrast: 1.562,
-      saturation: 0.592,
-      temp: -1,
-      tint: 1,
-    },
-    background: {
-      exposure: 0.446,
-      contrast: 1.562,
-      saturation: 0.592,
-      temp: -1,
-      tint: 1,
-    },
-  },
-];
-
-type RadialGradientTimelineState = {
-  time: [number, number];
-  transformer1: (value: number) => string;
-  transformer2: (value: number) => string;
-};
-
-const radialGradientTimeline = timeline.reduce<RadialGradientTimelineState[]>(
-  (prev, curr) => {
-    if (prev.length === 0) {
-      return [
-        {
-          time: curr.time,
-          transformer1: () => curr.colors[0],
-          transformer2: () => curr.colors[1],
-        },
-      ];
-    }
-
-    const prevItem: RadialGradientTimelineState = {
-      ...prev[prev.length - 1],
-      time: [prev[prev.length - 1].time[0], prev[prev.length - 1].time[1]],
-    };
-    const currItem: TimelineState = {
-      ...curr,
-      time: [curr.time[0], curr.time[1]],
-    };
-    prevItem.time[1] -= 0.2;
-    currItem.time[0] += 0.2;
-
-    const intermediateItem: RadialGradientTimelineState = {
-      time: [prevItem.time[1], currItem.time[0]],
-      transformer1: (value) =>
-        transform(
-          value,
-          [prevItem.time[1], currItem.time[0]],
-          [prevItem.transformer1(prevItem.time[1]), currItem.colors[0]],
-          {
-            ease: cubicBezier(0.3, 0, 0.2, 1),
-          },
-        ),
-      transformer2: (value) =>
-        transform(
-          value,
-          [prevItem.time[1], currItem.time[0]],
-          [prevItem.transformer2(prevItem.time[1]), currItem.colors[1]],
-          {
-            ease: cubicBezier(0.3, 0, 0.2, 1),
-          },
-        ),
-    };
-
-    const rest = prev.slice(0, prev.length - 1);
-
-    return [
-      ...rest,
-      prevItem,
-      intermediateItem,
-      {
-        time: currItem.time,
-        transformer1: () => currItem.colors[0],
-        transformer2: () => currItem.colors[1],
-      },
-    ];
-  },
-  [],
-);
-
-const getRadialGradient = (time: number) => {
-  const transformer = radialGradientTimeline.find(
-    (transformer) => time >= transformer.time[0] && time <= transformer.time[1],
-  );
-
-  return {
-    colorBottom: transformer?.transformer1(time),
-    colorTop: transformer?.transformer2(time),
-  };
-};
-
-type FiltersTimelineState = {
-  time: [number, number];
-  transformers: (value: number) => {
-    foreground: {
-      exposure: number;
-      contrast: number;
-      saturation: number;
-      temp: number;
-      tint: number;
-    };
-    background: {
-      exposure: number;
-      contrast: number;
-      saturation: number;
-      temp: number;
-      tint: number;
-    };
-  };
-};
-
-const filterTimeline = timeline.reduce<FiltersTimelineState[]>((prev, curr) => {
-  if (prev.length === 0) {
-    return [
-      {
-        time: curr.time,
-        transformers: () => {
-          return {
-            foreground: curr.foreground,
-            background: curr.background,
-          };
-        },
-      },
-    ];
-  }
-
-  const prevItem: FiltersTimelineState = {
-    ...prev[prev.length - 1],
-    time: [prev[prev.length - 1].time[0], prev[prev.length - 1].time[1]],
-  };
-  const currItem: TimelineState = {
-    ...curr,
-    time: [curr.time[0], curr.time[1]],
-  };
-  prevItem.time[1] -= 0.2;
-  currItem.time[0] += 0.2;
-
-  const intermediatePeriod: FiltersTimelineState["time"] = [
-    prevItem.time[1],
-    currItem.time[0],
-  ];
-
-  const intermediateItem: FiltersTimelineState = {
-    time: intermediatePeriod,
-    transformers: (value: number) => {
-      return {
-        foreground: {
-          exposure: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).foreground.exposure,
-              currItem.foreground.exposure,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          contrast: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).foreground.contrast,
-              currItem.foreground.contrast,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          saturation: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).foreground.saturation,
-              currItem.foreground.saturation,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          temp: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).foreground.temp,
-              currItem.foreground.temp,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          tint: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).foreground.tint,
-              currItem.foreground.tint,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-        },
-        background: {
-          exposure: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).background.exposure,
-              currItem.background.exposure,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          contrast: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).background.contrast,
-              currItem.background.contrast,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          saturation: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).background.saturation,
-              currItem.background.saturation,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          temp: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).background.temp,
-              currItem.background.temp,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-          tint: transform(
-            value,
-            intermediatePeriod,
-            [
-              prevItem.transformers(prevItem.time[1]).background.tint,
-              currItem.background.tint,
-            ],
-            {
-              ease: cubicBezier(0.3, 0, 0.2, 1),
-            },
-          ),
-        },
-      };
-    },
-  };
-
-  const rest = prev.slice(0, prev.length - 1);
-
-  return [
-    ...rest,
-    prevItem,
-    intermediateItem,
-    {
-      time: currItem.time,
-      transformers: () => ({
-        foreground: currItem.foreground,
-        background: currItem.background,
-      }),
-    },
-  ];
-}, []);
-
-const getFilterTimeline = (time: number) => {
-  const transformer = filterTimeline.find(
-    (transformer) => time >= transformer.time[0] && time <= transformer.time[1],
-  );
-
-  return transformer?.transformers(time);
-};
+import FieldImage from "./fieldImage";
+import { useFilteredImage, useFilterValues } from "./helper/filter-image";
+import {
+  getCloudTimeline,
+  getFilterTimeline,
+  getRadialGradient,
+  getSunTimeline,
+  sunAppearTime,
+  sunDisappearTime,
+} from "./helper/timeline";
+import Cloud from "./images/clouds.png";
+import Dither from "./images/dither.png";
+import Sun from "./images/sun.png";
+import Moon from "./images/moon.png";
 
 const sunColor = "#FFF49D";
+
+const clouds = [
+  {
+    offset: 100,
+    speed: 1,
+    x: 400,
+    y: 150,
+  },
+  {
+    offset: 700,
+    speed: 0.5,
+    x: 300,
+    y: 140,
+  },
+  {
+    offset: 400,
+    speed: 0.65,
+    x: 200,
+    y: 180,
+  },
+  {
+    offset: 250,
+    speed: 0.8,
+    x: 100,
+    y: 130,
+  },
+];
 
 const Page = () => {
   const [time, setTime] = useState(0);
   const [realTime, setRealTime] = useState(0);
   const [isRealTime, setIsRealTime] = useState(false);
-  const [foregroundState, setForegroundState] = useState(
-    getFilterTimeline(0)?.foreground || {
-      exposure: 1,
-      contrast: 1,
-      saturation: 1,
-      temp: 0,
-      tint: 0,
-    },
-  );
-  const [backgroundState, setBackgroundState] = useState(
-    getFilterTimeline(0)?.background || {
-      exposure: 1,
-      contrast: 1,
-      saturation: 1,
-      temp: 0,
-      tint: 0,
-    },
-  );
+  const [showDither, setShowDither] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const areaRef = useRef<HTMLDivElement>(null);
+  const cloudContainerRef = useRef<HTMLDivElement>(null);
 
-  const inGameTime = useMotionValue(0);
+  const inGameTime = useMotionValue(0.5);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -513,68 +105,169 @@ const Page = () => {
     (value) => value.colorTop || "#fff",
   );
 
-  const filterValuesBackgroundExposure = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.background.exposure || 1;
-  });
-  const filterValuesBackgroundContrast = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.background.contrast || 1;
-  });
-  const filterValuesBackgroundSaturation = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.background.saturation || 1;
-  });
-  const filterValuesBackgroundTemp = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.background.temp || 0;
-  });
-  const filterValuesBackgroundTint = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.background.tint || 0;
+  const foregroundFilterValues = useFilterValues();
+  const backgroundFilterValues = useFilterValues();
+
+  const cloudOpacity = useMotionValue(0);
+  const cloudFilterValues = useFilterValues();
+  const cloudImage = useFilteredImage(Cloud.src, 250, 150, cloudFilterValues);
+
+  const sunOpacity = useMotionValue(0);
+  const sunAngle = useMotionValue(0);
+
+  const sunX = useMotionValue(0);
+  const sunY = useMotionValue(0);
+
+  const moonX = useMotionValue(-100);
+  const moonY = useMotionValue(-100);
+
+  useMotionValueEvent(inGameTime, "change", () => {
+    const filterTimeline = getFilterTimeline(inGameTime.get());
+    if (filterTimeline) {
+      foregroundFilterValues.exposure.set(filterTimeline.foreground.exposure);
+      foregroundFilterValues.contrast.set(filterTimeline.foreground.contrast);
+      foregroundFilterValues.saturation.set(
+        filterTimeline.foreground.saturation,
+      );
+      foregroundFilterValues.temp.set(filterTimeline.foreground.temp);
+      foregroundFilterValues.tint.set(filterTimeline.foreground.tint);
+      backgroundFilterValues.exposure.set(filterTimeline.background.exposure);
+      backgroundFilterValues.contrast.set(filterTimeline.background.contrast);
+      backgroundFilterValues.saturation.set(
+        filterTimeline.background.saturation,
+      );
+      backgroundFilterValues.temp.set(filterTimeline.background.temp);
+      backgroundFilterValues.tint.set(filterTimeline.background.tint);
+    }
+
+    const cloudFilterTimeline = getCloudTimeline(inGameTime.get());
+    if (cloudFilterTimeline) {
+      cloudOpacity.set(cloudFilterTimeline.opacity);
+      cloudFilterValues.exposure.set(cloudFilterTimeline.exposure);
+      cloudFilterValues.contrast.set(cloudFilterTimeline.contrast);
+      cloudFilterValues.saturation.set(cloudFilterTimeline.saturation);
+      cloudFilterValues.temp.set(cloudFilterTimeline.temp);
+      cloudFilterValues.tint.set(cloudFilterTimeline.tint);
+    }
+
+    const sunTimeline = getSunTimeline(inGameTime.get());
+    if (sunTimeline) {
+      sunOpacity.set(sunTimeline.opacity);
+      sunAngle.set(sunTimeline.angle);
+    }
+
+    // const x = getSunTimeline(sunX.get());
+
+    // const
+
+    const area = areaRef.current;
+    if (!area) return;
+
+    const angle =
+      ((inGameTime.get() - 6) / (sunDisappearTime - sunAppearTime)) *
+        2 *
+        Math.PI +
+      Math.PI;
+    const x = (area.clientWidth / 2) * 0.8;
+
+    sunX.set(x * Math.cos(angle) + area.clientWidth / 2);
+
+    console.log(angle);
+    sunY.set(x * Math.sin(angle) + area.clientHeight / 2);
   });
 
-  const filterValuesForegroundExposure = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.foreground.exposure || 1;
-  });
-  const filterValuesForegroundContrast = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.foreground.contrast || 1;
-  });
-  const filterValuesForegroundSaturation = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.foreground.saturation || 1;
-  });
-  const filterValuesForegroundTemp = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.foreground.temp || 0;
-  });
-  const filterValuesForegroundTint = useTransform(inGameTime, (value) => {
-    return getFilterTimeline(value)?.foreground.tint || 0;
-  });
+  const cloud1X = useMotionValue(clouds[0].x || 0);
+  const cloud1Y = useMotionValue(clouds[0].y || 0);
 
-  useMotionValueEvent(filterValuesBackgroundExposure, "change", (value) => {
-    setBackgroundState((prev) => ({ ...prev, exposure: value }));
-  });
-  useMotionValueEvent(filterValuesBackgroundContrast, "change", (value) => {
-    setBackgroundState((prev) => ({ ...prev, contrast: value }));
-  });
-  useMotionValueEvent(filterValuesBackgroundSaturation, "change", (value) => {
-    setBackgroundState((prev) => ({ ...prev, saturation: value }));
-  });
-  useMotionValueEvent(filterValuesBackgroundTemp, "change", (value) => {
-    setBackgroundState((prev) => ({ ...prev, temp: value }));
-  });
-  useMotionValueEvent(filterValuesBackgroundTint, "change", (value) => {
-    setBackgroundState((prev) => ({ ...prev, tint: value }));
-  });
+  const cloud2X = useMotionValue(clouds[1].x || 0);
+  const cloud2Y = useMotionValue(clouds[1].y || 0);
 
-  useMotionValueEvent(filterValuesForegroundExposure, "change", (value) => {
-    setForegroundState((prev) => ({ ...prev, exposure: value }));
-  });
-  useMotionValueEvent(filterValuesForegroundContrast, "change", (value) => {
-    setForegroundState((prev) => ({ ...prev, contrast: value }));
-  });
-  useMotionValueEvent(filterValuesForegroundSaturation, "change", (value) => {
-    setForegroundState((prev) => ({ ...prev, saturation: value }));
-  });
-  useMotionValueEvent(filterValuesForegroundTemp, "change", (value) => {
-    setForegroundState((prev) => ({ ...prev, temp: value }));
-  });
-  useMotionValueEvent(filterValuesForegroundTint, "change", (value) => {
-    setForegroundState((prev) => ({ ...prev, tint: value }));
+  const cloud3X = useMotionValue(clouds[2].x || 0);
+  const cloud3Y = useMotionValue(clouds[2].y || 0);
+
+  const cloud4X = useMotionValue(clouds[3].x || 0);
+  const cloud4Y = useMotionValue(clouds[3].y || 0);
+
+  const updateCloud = (
+    cloudSetting: {
+      offset: number;
+      speed: number;
+      x: number;
+      y: number;
+    },
+    x: MotionValue<number>,
+    y: MotionValue<number>,
+    transformer: (value: number) => number,
+    time: number,
+  ) => {
+    const cloudContainer = cloudContainerRef.current;
+    if (!cloudContainer) return;
+
+    const originalX =
+      ((time / 100) * cloudSetting.speed + cloudSetting.offset) %
+      (cloudContainer.clientWidth + 250);
+
+    const nextX = transformer(originalX);
+
+    const shouldReset =
+      x.get() > cloudContainer.clientWidth / 2 &&
+      nextX < cloudContainer.clientWidth / 2;
+
+    if (shouldReset) {
+      const nextY = Math.random() * 100 + 100;
+      y.set(nextY);
+    }
+
+    x.set(nextX);
+  };
+
+  useAnimationFrame((time) => {
+    const cloudContainer = cloudContainerRef.current;
+    if (!cloudContainer) return;
+
+    updateCloud(
+      clouds[0],
+      cloud1X,
+      cloud1Y,
+      transform(
+        [0, cloudContainer.clientWidth + 250],
+        [-125, cloudContainer.clientWidth + 125],
+      ),
+      time,
+    );
+
+    updateCloud(
+      clouds[1],
+      cloud2X,
+      cloud2Y,
+      transform(
+        [0, cloudContainer.clientWidth + 250],
+        [-125, cloudContainer.clientWidth + 125],
+      ),
+      time,
+    );
+
+    updateCloud(
+      clouds[2],
+      cloud3X,
+      cloud3Y,
+      transform(
+        [0, cloudContainer.clientWidth + 250],
+        [-125, cloudContainer.clientWidth + 125],
+      ),
+      time,
+    );
+
+    updateCloud(
+      clouds[3],
+      cloud4X,
+      cloud4Y,
+      transform(
+        [0, cloudContainer.clientWidth + 250],
+        [-125, cloudContainer.clientWidth + 125],
+      ),
+      time,
+    );
   });
 
   return (
@@ -583,22 +276,156 @@ const Page = () => {
         className="relative col-start-1 col-end-10 grid grid-cols-2 p-6 pointer-events-none"
         ref={containerRef}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-1/2 w-[900px] h-[660px] overflow-hidden">
-          <motion.div
-            className="absolute top-0 -left-full -right-full h-[300px]"
-            style={{
-              imageRendering: "pixelated",
-              background: useMotionTemplate`radial-gradient(ellipse farthest-side at bottom, ${radialGradientColorBottom}, ${radialGradientColorTop})`,
-            }}
-          />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-1/2 w-[900px] h-[660px] overflow-hidden"
+          ref={areaRef}
+        >
+          <div className="absolute inset-0">
+            <motion.div
+              className="absolute top-0 -left-full -right-full h-[292px]"
+              style={{
+                imageRendering: "pixelated",
+                background: useMotionTemplate`radial-gradient(ellipse farthest-side at bottom, ${radialGradientColorBottom}, ${radialGradientColorTop})`,
+              }}
+            >
+              <motion.div
+                className="absolute top-0 left-0 right-0 h-[500px] "
+                style={{
+                  imageRendering: "pixelated",
+                  rotate: sunAngle,
+                  opacity: sunOpacity,
+                  background: `radial-gradient(ellipse farthest-side at 40% 75%, ${sunColor}, transparent)`,
+                }}
+              ></motion.div>
+            </motion.div>
+
+            <motion.div
+              className="absolute top-0 left-0 z-10"
+              style={{
+                x: sunX,
+                y: sunY,
+              }}
+            >
+              <Image
+                className="absolute top-1/2 left-1/2 -translate-1/2 max-w-none w-[78px] h-[78px] object"
+                src={Sun}
+                width={78}
+                height={78}
+                alt={""}
+              />
+            </motion.div>
+
+            <motion.div
+              className="absolute top-0 left-0"
+              style={{
+                x: moonX,
+                y: moonY,
+              }}
+            >
+              <Image
+                className="absolute top-1/2 left-1/2 -translate-1/2 max-w-none w-[78px] h-[78px] object"
+                src={Moon}
+                width={78}
+                height={78}
+                alt={""}
+              />
+            </motion.div>
+
+            {cloudImage && (
+              <motion.div
+                className="absolute inset-0 overflow-hidden"
+                ref={cloudContainerRef}
+                style={{
+                  opacity: cloudOpacity,
+                }}
+              >
+                <motion.div
+                  className="absolute top-0 left-0"
+                  style={{
+                    x: cloud1X,
+                    y: cloud1Y,
+                  }}
+                >
+                  <Image
+                    className="absolute top-1/2 left-1/2 -translate-1/2 max-w-none w-[250px] h-[50px] object-top object-none"
+                    src={cloudImage}
+                    width={250}
+                    height={50}
+                    alt={""}
+                  />
+                </motion.div>
+
+                <motion.div
+                  className="absolute top-0 left-0"
+                  style={{
+                    x: cloud2X,
+                    y: cloud2Y,
+                  }}
+                >
+                  <Image
+                    className="absolute top-1/2 left-1/2 -translate-1/2 max-w-none w-[250px] h-[50px] object-[0%_50%] object-none"
+                    src={cloudImage}
+                    width={250}
+                    height={50}
+                    alt={""}
+                  />
+                </motion.div>
+
+                <motion.div
+                  className="absolute top-0 left-0"
+                  style={{
+                    x: cloud3X,
+                    y: cloud3Y,
+                  }}
+                >
+                  <Image
+                    className="absolute top-1/2 left-1/2 -translate-1/2 max-w-none w-[250px] h-[50px] object-[0%_100%] object-none"
+                    src={cloudImage}
+                    width={250}
+                    height={50}
+                    alt={""}
+                  />
+                </motion.div>
+
+                <motion.div
+                  className="absolute top-0 left-0"
+                  style={{
+                    x: cloud4X,
+                    y: cloud4Y,
+                  }}
+                >
+                  <Image
+                    className="absolute top-1/2 left-1/2 -translate-1/2 max-w-none w-[250px] h-[50px] object-[0%_100%] object-none"
+                    src={cloudImage}
+                    width={250}
+                    height={50}
+                    alt={""}
+                  />
+                </motion.div>
+              </motion.div>
+            )}
+
+            {showDither && (
+              <motion.div
+                className="absolute top-0 left-0 right-0 opacity-15 h-[750px] -translate-y-[88px]"
+                style={{
+                  backgroundImage: `url(${Dither.src})`,
+                  mixBlendMode: "darken",
+                  backgroundRepeat: "repeat-x",
+                  backgroundSize: "auto 50%",
+                  backgroundPosition: "center 0%",
+                }}
+              ></motion.div>
+            )}
+          </div>
           <motion.div className="absolute inset-0" style={{}}>
             <motion.div className="absolute inset-0">
               <FieldImage
-                exposure={filterValuesBackgroundExposure}
-                contrast={filterValuesBackgroundContrast}
-                saturation={filterValuesBackgroundSaturation}
-                temp={filterValuesBackgroundTemp}
-                tint={filterValuesBackgroundTint}
+                exposure={backgroundFilterValues.exposure}
+                contrast={backgroundFilterValues.contrast}
+                saturation={backgroundFilterValues.saturation}
+                temp={backgroundFilterValues.temp}
+                tint={backgroundFilterValues.tint}
               />
             </motion.div>
             <motion.div
@@ -609,11 +436,11 @@ const Page = () => {
               }}
             >
               <FieldImage
-                exposure={filterValuesForegroundExposure}
-                contrast={filterValuesForegroundContrast}
-                saturation={filterValuesForegroundSaturation}
-                temp={filterValuesForegroundTemp}
-                tint={filterValuesForegroundTint}
+                exposure={foregroundFilterValues.exposure}
+                contrast={foregroundFilterValues.contrast}
+                saturation={foregroundFilterValues.saturation}
+                temp={foregroundFilterValues.temp}
+                tint={foregroundFilterValues.tint}
               />
             </motion.div>
           </motion.div>
@@ -647,6 +474,15 @@ const Page = () => {
           />
         </div>
         <div>
+          Show Dithers
+          <Switch
+            checked={showDither}
+            onCheckedChange={(value) => {
+              setShowDither(value);
+            }}
+          />
+        </div>
+        <div>
           <Button
             onClick={() => {
               animate(0, 24, {
@@ -666,7 +502,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Exposure</div>
           <div className="flex gap-3 mt-2">
-            <div>{foregroundState.exposure.toFixed(3)}</div>
+            <div>{foregroundFilterValues.filterValues.exposure.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={0}
@@ -675,7 +511,7 @@ const Page = () => {
                 //   //   setForegroundState({ ...foregroundState, exposure: value[0] });
                 // }}
                 step={0.001}
-                value={[foregroundState.exposure]}
+                value={[foregroundFilterValues.filterValues.exposure]}
                 disabled
               />
               <div className="flex justify-between">
@@ -689,7 +525,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Contrast</div>
           <div className="flex gap-3 mt-2">
-            <div>{foregroundState.contrast.toFixed(3)}</div>
+            <div>{foregroundFilterValues.filterValues.contrast.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={0}
@@ -698,7 +534,7 @@ const Page = () => {
                 //   foregroundContrast.set(value[0]);
                 // }}
                 step={0.001}
-                value={[foregroundState.contrast]}
+                value={[foregroundFilterValues.filterValues.contrast]}
                 disabled
               />
               <div className="flex justify-between">
@@ -712,7 +548,9 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Saturation</div>
           <div className="flex gap-3 mt-2">
-            <div>{foregroundState.saturation.toFixed(3)}</div>
+            <div>
+              {foregroundFilterValues.filterValues.saturation.toFixed(3)}
+            </div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={0}
@@ -721,7 +559,7 @@ const Page = () => {
                 //   foregroundSaturation.set(value[0]);
                 // }}
                 step={0.001}
-                value={[foregroundState.saturation]}
+                value={[foregroundFilterValues.filterValues.saturation]}
                 disabled
               />
               <div className="flex justify-between">
@@ -735,7 +573,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Temp</div>
           <div className="flex gap-3 mt-2">
-            <div>{foregroundState.temp.toFixed(3)}</div>
+            <div>{foregroundFilterValues.filterValues.temp.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={-1}
@@ -744,7 +582,7 @@ const Page = () => {
                 //   foregroundTemp.set(value[0]);
                 // }}
                 step={0.001}
-                value={[foregroundState.temp]}
+                value={[foregroundFilterValues.filterValues.temp]}
                 disabled
               />
               <div className="flex justify-between">
@@ -758,7 +596,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Tint</div>
           <div className="flex gap-3 mt-2">
-            <div>{foregroundState.tint.toFixed(3)}</div>
+            <div>{foregroundFilterValues.filterValues.tint.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={-1}
@@ -767,7 +605,7 @@ const Page = () => {
                 //   foregroundTint.set(value[0]);
                 // }}
                 step={0.001}
-                value={[foregroundState.tint]}
+                value={[foregroundFilterValues.filterValues.tint]}
                 disabled
               />
               <div className="flex justify-between">
@@ -781,7 +619,9 @@ const Page = () => {
         <div className="">
           <Button
             onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(foregroundState));
+              navigator.clipboard.writeText(
+                JSON.stringify(foregroundFilterValues.filterValues),
+              );
             }}
           >
             Copy
@@ -795,7 +635,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Exposure</div>
           <div className="flex gap-3 mt-2">
-            <div>{backgroundState.exposure.toFixed(3)}</div>
+            <div>{backgroundFilterValues.filterValues.exposure.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={0}
@@ -804,7 +644,7 @@ const Page = () => {
                 //   backgroundExposure.set(value[0]);
                 // }}
                 step={0.001}
-                value={[backgroundState.exposure]}
+                value={[backgroundFilterValues.filterValues.exposure]}
                 disabled
               />
               <div className="flex justify-between">
@@ -818,7 +658,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Contrast</div>
           <div className="flex gap-3 mt-2">
-            <div>{backgroundState.contrast.toFixed(3)}</div>
+            <div>{backgroundFilterValues.filterValues.contrast.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={0}
@@ -827,7 +667,7 @@ const Page = () => {
                 //   backgroundContrast.set(value[0]);
                 // }}
                 step={0.001}
-                value={[backgroundState.contrast]}
+                value={[backgroundFilterValues.filterValues.contrast]}
                 disabled
               />
               <div className="flex justify-between">
@@ -841,7 +681,9 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Saturation</div>
           <div className="flex gap-3 mt-2">
-            <div>{backgroundState.saturation.toFixed(3)}</div>
+            <div>
+              {backgroundFilterValues.filterValues.saturation.toFixed(3)}
+            </div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={0}
@@ -850,7 +692,7 @@ const Page = () => {
                 //   backgroundSaturation.set(value[0]);
                 // }}
                 step={0.001}
-                value={[backgroundState.saturation]}
+                value={[backgroundFilterValues.filterValues.saturation]}
                 disabled
               />
               <div className="flex justify-between">
@@ -864,7 +706,7 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Temp</div>
           <div className="flex gap-3 mt-2">
-            <div>{backgroundState.temp.toFixed(3)}</div>
+            <div>{backgroundFilterValues.filterValues.temp.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={-1}
@@ -873,7 +715,7 @@ const Page = () => {
                 //   backgroundTemp.set(value[0]);
                 // }}
                 step={0.001}
-                value={[backgroundState.temp]}
+                value={[backgroundFilterValues.filterValues.temp]}
                 disabled
               />
               <div className="flex justify-between">
@@ -887,16 +729,16 @@ const Page = () => {
         <div className="flex flex-col">
           <div className="">Tint</div>
           <div className="flex gap-3 mt-2">
-            <div>{backgroundState.tint.toFixed(3)}</div>
+            <div>{backgroundFilterValues.filterValues.tint.toFixed(3)}</div>
             <div className="flex flex-col w-full gap-1">
               <Slider
                 min={-1}
                 max={1}
                 // onValueChange={(value) => {
-                //   backgroundTint.set(value[0]);
+                //   setBackgroundState({ ...backgroundState, tint: value[0] });
                 // }}
                 step={0.001}
-                value={[backgroundState.tint]}
+                value={[backgroundFilterValues.filterValues.tint]}
                 disabled
               />
               <div className="flex justify-between">
@@ -910,7 +752,140 @@ const Page = () => {
         <div className="">
           <Button
             onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(backgroundState));
+              navigator.clipboard.writeText(
+                JSON.stringify(backgroundFilterValues.filterValues),
+              );
+            }}
+          >
+            Copy
+          </Button>
+        </div>
+
+        <hr className="my-4" />
+
+        <div>Cloud Filters</div>
+
+        <div className="flex flex-col">
+          <div className="">Exposure</div>
+          <div className="flex gap-3 mt-2">
+            <div>{cloudFilterValues.filterValues.exposure.toFixed(3)}</div>
+            <div className="flex flex-col w-full gap-1">
+              <Slider
+                min={0}
+                max={2}
+                // onValueChange={(value) => {
+                //   cloudFilterValues.exposure.set(value[0]);
+                // }}
+                step={0.001}
+                value={[cloudFilterValues.filterValues.exposure]}
+                disabled
+              />
+              <div className="flex justify-between">
+                <div>0</div>
+                <div>2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="">Contrast</div>
+          <div className="flex gap-3 mt-2">
+            <div>{cloudFilterValues.filterValues.contrast.toFixed(3)}</div>
+            <div className="flex flex-col w-full gap-1">
+              <Slider
+                min={0}
+                max={2}
+                // onValueChange={(value) => {
+                //   cloudFilterValues.contrast.set(value[0]);
+                // }}
+                step={0.001}
+                value={[cloudFilterValues.filterValues.contrast]}
+                disabled
+              />
+              <div className="flex justify-between">
+                <div>0</div>
+                <div>2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="">Saturation</div>
+          <div className="flex gap-3 mt-2">
+            <div>{cloudFilterValues.filterValues.saturation.toFixed(3)}</div>
+            <div className="flex flex-col w-full gap-1">
+              <Slider
+                min={0}
+                max={2}
+                // onValueChange={(value) => {
+                //   cloudFilterValues.saturation.set(value[0]);
+                // }}
+                step={0.001}
+                value={[cloudFilterValues.filterValues.saturation]}
+                disabled
+              />
+              <div className="flex justify-between">
+                <div>0</div>
+                <div>2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="">Temp</div>
+          <div className="flex gap-3 mt-2">
+            <div>{cloudFilterValues.filterValues.temp.toFixed(3)}</div>
+            <div className="flex flex-col w-full gap-1">
+              <Slider
+                min={-1}
+                max={1}
+                // onValueChange={(value) => {
+                //   cloudFilterValues.temp.set(value[0]);
+                // }}
+                step={0.001}
+                value={[cloudFilterValues.filterValues.temp]}
+                disabled
+              />
+              <div className="flex justify-between">
+                <div>-1</div>
+                <div>1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="">Tint</div>
+          <div className="flex gap-3 mt-2">
+            <div>{cloudFilterValues.filterValues.tint.toFixed(3)}</div>
+            <div className="flex flex-col w-full gap-1">
+              <Slider
+                min={-1}
+                max={1}
+                // onValueChange={(value) => {
+                //   cloudFilterValues.tint.set(value[0]);
+                // }}
+                step={0.001}
+                value={[cloudFilterValues.filterValues.tint]}
+                disabled
+              />
+              <div className="flex justify-between">
+                <div>-1</div>
+                <div>1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="">
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(
+                JSON.stringify(cloudFilterValues.filterValues),
+              );
             }}
           >
             Copy
