@@ -1,7 +1,10 @@
 import { cn } from "@/lib/utils";
 import Quagga from "@ericblade/quagga2";
 import { useEffect, useRef, useState } from "react";
-import { MEADOW_FRESH_BARCODES } from "../constants/barcodes";
+import {
+  MEADOW_FRESH_EAN_BARCODES,
+  MEADOW_FRESH_EAN_8_BARCODES,
+} from "../constants/barcodes";
 
 type Props = {
   className: string;
@@ -32,7 +35,7 @@ const BarcodeReader: React.FC<Props> = (props) => {
           },
         },
         decoder: {
-          readers: ["ean_reader"],
+          readers: ["ean_reader", "ean_8_reader"],
         },
         locate: false,
       },
@@ -52,7 +55,16 @@ const BarcodeReader: React.FC<Props> = (props) => {
       console.log(result);
 
       if (
-        MEADOW_FRESH_BARCODES.some((code) => code === result.codeResult.code)
+        result.codeResult.format === "ean_8" &&
+        MEADOW_FRESH_EAN_8_BARCODES.some(
+          (code) => code === result.codeResult.code,
+        )
+      ) {
+        setResult("detected");
+      } else if (
+        MEADOW_FRESH_EAN_BARCODES.some(
+          (code) => code === result.codeResult.code,
+        )
       ) {
         setResult("detected");
       } else {
