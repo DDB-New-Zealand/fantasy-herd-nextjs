@@ -299,7 +299,7 @@ const Page = () => {
               ></motion.div>
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               className="absolute top-0 left-0 z-10"
               style={{
                 x: sunX,
@@ -313,9 +313,9 @@ const Page = () => {
                 height={78}
                 alt={""}
               />
-            </motion.div>
+            </motion.div> */}
 
-            <motion.div
+            {/* <motion.div
               className="absolute top-0 left-0"
               style={{
                 x: moonX,
@@ -329,7 +329,7 @@ const Page = () => {
                 height={78}
                 alt={""}
               />
-            </motion.div>
+            </motion.div> */}
 
             {cloudImage && (
               <motion.div
