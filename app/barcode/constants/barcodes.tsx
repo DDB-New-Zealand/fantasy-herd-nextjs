@@ -1,0 +1,1 @@
+export const MEADOW_FRESH_BARCODES = ["9414090875157"];
