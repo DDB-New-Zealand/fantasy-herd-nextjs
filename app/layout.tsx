@@ -1,15 +1,55 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import localFont from "next/font/local";
+import { ThemeProvider } from "next-themes";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// TODO: fonts needs to be licensed
+const barnegat = localFont({
+  src: "./fonts/dev/BARNEGAT/BARNEGAT-Regular.woff2",
+  variable: "--font-barnegat",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const round8 = localFont({
+  src: [
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-EIGHT.woff2",
+    //   weight: "800",
+    // },
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-SEVEN.woff2",
+    //   weight: "700",
+    // },
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-SIX.woff2",
+    //   weight: "600",
+    // },
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-FIVE.woff2",
+    //   weight: "500",
+    // },
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-FOUR.woff2",
+    //   weight: "400",
+    // },
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-THREE.woff2",
+    //   weight: "300",
+    // },
+    // {
+    //   path: "./fonts/dev/ROUND8/ROUND8-TWO.woff2",
+    //   weight: "200",
+    // },
+    {
+      path: "./fonts/dev/ROUND8/ROUND8-ONE.woff2",
+      weight: "400",
+    },
+    {
+      path: "./fonts/dev/ROUND8/ROUND8-TWO.woff2",
+      weight: "400",
+      style: "italic",
+    },
+  ],
+  variable: "--font-round8",
 });
 
 export const metadata: Metadata = {
@@ -23,12 +63,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <main className="min-h-svh w-full">{children}</main>
-        <footer></footer>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${barnegat.variable} ${round8.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <main className="min-h-svh w-full">{children}</main>
+          <footer></footer>
+        </ThemeProvider>
       </body>
     </html>
   );

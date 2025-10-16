@@ -7,8 +7,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-title: var(--font-round8);
+  --font-paragraph: var(--font-barnegat);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -158,8 +158,21 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    hanging-punctuation: center;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .hanging-punctuation-center {
+    hanging-punctuation: center;
+  }
+  .bg-title-gradient {
+    background-color: var(--moss-green);
+    background-image: radial-gradient(
+      ellipse 150% 150% at 50% 0%,
+      transparent 50%,
+      transparent 58%,
+      var(--dew-green) 89%
+    );
   }
 }
