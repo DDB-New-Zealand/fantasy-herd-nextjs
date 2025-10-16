@@ -11,34 +11,6 @@ const barnegat = localFont({
 
 const round8 = localFont({
   src: [
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-EIGHT.woff2",
-    //   weight: "800",
-    // },
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-SEVEN.woff2",
-    //   weight: "700",
-    // },
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-SIX.woff2",
-    //   weight: "600",
-    // },
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-FIVE.woff2",
-    //   weight: "500",
-    // },
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-FOUR.woff2",
-    //   weight: "400",
-    // },
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-THREE.woff2",
-    //   weight: "300",
-    // },
-    // {
-    //   path: "./fonts/dev/ROUND8/ROUND8-TWO.woff2",
-    //   weight: "200",
-    // },
     {
       path: "./fonts/dev/ROUND8/ROUND8-ONE.woff2",
       weight: "400",
@@ -64,15 +36,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${barnegat.variable} ${round8.variable} antialiased`}>
+      <body
+        className={`${barnegat.variable} ${round8.variable} font-paragraph antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-svh w-full">{children}</main>
-          <footer></footer>
+          {children}
         </ThemeProvider>
       </body>
     </html>

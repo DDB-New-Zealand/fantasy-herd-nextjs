@@ -1,4 +1,4 @@
-import { Section } from "@/app/card/helper/canvas";
+import { Section } from "@/app/(prototype)/card/helper/canvas";
 import { BlendMode, Jimp, ResizeStrategy } from "jimp";
 import { X } from "lucide-react";
 import { NextRequest, NextResponse } from "next/server";

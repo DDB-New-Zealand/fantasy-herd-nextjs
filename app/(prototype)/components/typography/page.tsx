@@ -14,11 +14,14 @@ import {
   CheckCardDescription,
   CheckCardTitle,
   FieldLabel,
+  HelperLabel,
   HomeFooter,
   HomeParagraph,
   HomeTitle,
   PageDescription,
   PageTitle,
+  PaginationLabel,
+  PaginationValue,
   PlayerAreaLabel,
   PlayerCardTitle,
   PlayerCardValue,
@@ -31,7 +34,7 @@ import {
   PlayerDetailTitle,
   PlayerDetailValue,
   PlayerDetailValueLabel,
-  SidePanelLabel,
+  SidePanelButtonLabel,
   SummaryDescription,
   SummaryLabel,
   SummarySectionTitle,
@@ -66,7 +69,7 @@ const Page = () => {
           Home paragraph - Lorem ipsum dolor sit amet, consectetur
         </HomeParagraph>
         <HomeFooter>Home footer</HomeFooter>
-        <SidePanelLabel>Side panel label</SidePanelLabel>
+        <SidePanelButtonLabel>Side panel button label</SidePanelButtonLabel>
         <WeatherWidgetTitle>Weather Widget Title</WeatherWidgetTitle>
         <WeatherLabel>Weather Label</WeatherLabel>
         <WeatherValue>Weather Value - 19°</WeatherValue>
@@ -186,6 +189,9 @@ const Page = () => {
         <SummaryTableValueSmall>
           Summary Table Value Small
         </SummaryTableValueSmall>
+        <HelperLabel>Helper label</HelperLabel>
+        <PaginationValue>Pagination Value</PaginationValue>
+        <PaginationLabel>Pagination Label</PaginationLabel>
       </div>
       <div className="border-l border-black bg-white col-start-10 col-end-13 p-6 flex flex-col overflow-y-auto gap-3">
         <Select

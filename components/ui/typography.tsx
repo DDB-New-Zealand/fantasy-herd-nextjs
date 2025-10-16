@@ -75,7 +75,7 @@ export const BannerLabel: React.FC<Props> = (props) => {
   );
 };
 
-export const SidePanelLabel: React.FC<Props> = (props) => {
+export const SidePanelButtonLabel: React.FC<Props> = (props) => {
   const { className, asChild, children } = props;
 
   const Comp = asChild ? Slot : "p";

@@ -2,7 +2,7 @@
 
 import { useCurrentTime } from "@/lib/time";
 import { useEffect, useState } from "react";
-import { WeatherApiResponse } from "../api/weather/route";
+import { WeatherApiResponse } from "../../(api)/api/weather/route";
 
 type Props = {
   country: string;
