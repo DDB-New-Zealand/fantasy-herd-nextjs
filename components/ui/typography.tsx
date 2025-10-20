@@ -32,7 +32,7 @@ export const HomeParagraph: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-paragraph text-center text-[26px] leading-[108%] -tracking-[0.03em]`,
+        `font-paragraph text-center text-[26px] leading-[108%] -tracking-[0.03em] whitespace-pre-line`,
         className,
       )}
     >

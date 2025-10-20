@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 // console.log(geo);
 
 export const config = {
-  matcher: "/geolocation",
+  matcher: ["/", "/geolocation"],
 };
 
 export async function middleware(req: NextRequest) {

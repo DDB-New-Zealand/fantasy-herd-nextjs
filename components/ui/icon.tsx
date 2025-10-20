@@ -1,7 +1,22 @@
 import { cn } from "@/lib/utils";
 import Placeholder from "./placeholder";
 
-export type IconType = "stats" | "timeline" | "trophy" | "help" | "dark";
+export type IconType =
+  | "stats"
+  | "timeline"
+  | "trophy"
+  | "help"
+  | "dark"
+  | "light"
+  | "time"
+  | "sunny"
+  | "partly_cloudy"
+  | "cloud"
+  | "grass"
+  | "flag"
+  | "scan"
+  | "transfer"
+  | "user";
 
 type Props = {
   type: IconType;
@@ -9,7 +24,7 @@ type Props = {
 };
 
 const Icon = ({ type, className }: Props) => {
-  return <Placeholder className={cn(className, "w-6 h-6")} />;
+  return <Placeholder className={cn("w-6 h-6", className)} />;
 };
 
 export default Icon;
