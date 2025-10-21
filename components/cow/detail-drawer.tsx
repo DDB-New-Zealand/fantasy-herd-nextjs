@@ -24,9 +24,12 @@ import Placeholder from "../ui/placeholder";
 import { Price } from "../price";
 import { Rating } from "../rating";
 import Icon from "../ui/icon";
+import { useEffect, useState } from "react";
+import { CowData } from "@/app/(experience)/herd/page";
+import { delay } from "motion";
 
 type Props = {
-  open: boolean;
+  selectedData: CowData | null;
   setOpen: (open: boolean) => void;
 };
 
@@ -56,10 +59,23 @@ const P_DATA = [
 ];
 
 export const DetailDrawer: React.FC<Props> = (props) => {
-  const { open, setOpen } = props;
+  const { selectedData, setOpen } = props;
+
+  const [data, setData] = useState<CowData | null>(selectedData);
+  useEffect(() => {
+    if (selectedData) setData(selectedData);
+  }, [selectedData]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet
+      open={!!selectedData}
+      onOpenChange={(open) => {
+        delay(() => {
+          setData(null);
+        }, 0.3);
+        setOpen(open);
+      }}
+    >
       <SheetPortal>
         <SheetOverlay onClick={(e) => {}}>
           <div className="absolute inset-0 bg-primary text-primary-foreground flex items-center justify-center">
@@ -72,112 +88,121 @@ export const DetailDrawer: React.FC<Props> = (props) => {
             e.preventDefault();
           }}
         >
-          <SheetHeader>
-            <SheetTitle>COW DETAILS</SheetTitle>
-          </SheetHeader>
-          <div className="px-6">
-            <div className="border w-full rounded-[6px] pt-3 px-3">
-              <PlayerDetailLabel className="block mb-[6px]">
-                NAME
-              </PlayerDetailLabel>
-              <div className="flex justify-between items-center">
-                <div>
-                  <PlayerDetailTitle className="flex gap-3">
-                    Bessie
-                    <Placeholder className="w-[34px] h-[34px]" />
-                  </PlayerDetailTitle>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-col items-center justify-center">
-                    <PlayerDetailValue className="[&_svg]:mt-0.5 block">
-                      <Price>{15}</Price>
-                    </PlayerDetailValue>
-                    <PlayerDetailLabel>PRICE</PlayerDetailLabel>
+          {data && (
+            <>
+              <SheetHeader>
+                <SheetTitle>COW DETAILS</SheetTitle>
+              </SheetHeader>
+              <div className="px-6">
+                <div className="border w-full rounded-[6px] pt-3 px-3">
+                  <PlayerDetailLabel className="block mb-[6px]">
+                    {"cow surname"}
+                  </PlayerDetailLabel>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <PlayerDetailTitle className="flex gap-3">
+                        {data.name}
+                        <Placeholder className="w-[34px] h-[34px]" />
+                      </PlayerDetailTitle>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col items-center justify-center">
+                        <PlayerDetailValue className="[&_svg]:mt-0.5 block">
+                          <Price>{data.price}</Price>
+                        </PlayerDetailValue>
+                        <PlayerDetailLabel>PRICE</PlayerDetailLabel>
+                      </div>
+                      <div className="border-r h-[33px]" />
+                      <div className="flex flex-col items-center justify-center">
+                        <Rating size="lg" rating={data.rating} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="border-r h-[33px]" />
-                  <div className="flex flex-col items-center justify-center">
-                    <Rating size="lg" rating={"A+"} />
+                  <hr className="mt-3 -mx-3" />
+                  <div className="-mx-3 flex items-center justify-center">
+                    <button
+                      type="button"
+                      className="w-9 h-9 flex items-center justify-center border-r"
+                    >
+                      <Icon type="chevron" className="w-5 h-5" />
+                    </button>
+                    <div className="grow flex items-center justify-center">
+                      <PlayerDetailCarouselLabel>1/5</PlayerDetailCarouselLabel>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="w-9 h-9 flex items-center justify-center border-l"
+                    >
+                      <Icon type="chevron" className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
-              </div>
-              <hr className="mt-3 -mx-3" />
-              <div className="-mx-3 flex items-center justify-center">
-                <button
-                  type="button"
-                  className="w-9 h-9 flex items-center justify-center border-r"
-                >
-                  <Icon type="chevron" className="w-5 h-5" />
-                </button>
-                <div className="grow flex items-center justify-center">
-                  <PlayerDetailCarouselLabel>1/5</PlayerDetailCarouselLabel>
+                <table className="w-full mt-4 table-fixed [&_tr]:border-b [&_td]:nth-[1]:border-r">
+                  <thead>
+                    <tr className="border-b h-[20px]">
+                      <th className="text-left border-r w-1/2">
+                        <PlayerDetailTableHeader>Stat</PlayerDetailTableHeader>
+                      </th>
+                      <th className="text-left w-1/2 px-3">
+                        <PlayerDetailTableHeader>Value</PlayerDetailTableHeader>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {P_DATA.map((data) => (
+                      <tr key={data.label}>
+                        <td>
+                          <PlayerDetailTableLabel>
+                            {data.label}
+                          </PlayerDetailTableLabel>
+                        </td>
+                        <td className="text-left px-3 py-2 flex items-center gap-1.5">
+                          <Placeholder className="w-[10px] h-[13px]" />
+                          <PlayerDetailTableValue>
+                            {data.value}
+                          </PlayerDetailTableValue>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="flex">
+                  <button
+                    type="button"
+                    className="flex items-center justify-center w-9 h-9 border-r"
+                  >
+                    <Icon type="chevron" className="w-5 h-5" />
+                  </button>
+                  <div className="grow flex items-center justify-center">
+                    <PlayerDetailCarouselLabel>
+                      Preseason
+                    </PlayerDetailCarouselLabel>
+                  </div>
+                  <button
+                    type="button"
+                    className="flex items-center justify-center w-9 h-9 border-l"
+                  >
+                    <Icon type="chevron" className="w-5 h-5" />
+                  </button>
                 </div>
-
-                <button
-                  type="button"
-                  className="w-9 h-9 flex items-center justify-center border-l"
-                >
-                  <Icon type="chevron" className="w-5 h-5" />
-                </button>
               </div>
-            </div>
-            <table className="w-full mt-4 table-fixed [&_tr]:border-b [&_td]:nth-[1]:border-r">
-              <thead>
-                <tr className="border-b h-[20px]">
-                  <th className="text-left border-r w-1/2">
-                    <PlayerDetailTableHeader>Stat</PlayerDetailTableHeader>
-                  </th>
-                  <th className="text-left w-1/2 px-3">
-                    <PlayerDetailTableHeader>Value</PlayerDetailTableHeader>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {P_DATA.map((data) => (
-                  <tr key={data.label}>
-                    <td>
-                      <PlayerDetailTableLabel>
-                        {data.label}
-                      </PlayerDetailTableLabel>
-                    </td>
-                    <td className="text-left px-3 py-2 flex items-center gap-1.5">
-                      <Placeholder className="w-[10px] h-[13px]" />
-                      <PlayerDetailTableValue>
-                        {data.value}
-                      </PlayerDetailTableValue>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="flex">
-              <button
-                type="button"
-                className="flex items-center justify-center w-9 h-9 border-r"
-              >
-                <Icon type="chevron" className="w-5 h-5" />
-              </button>
-              <div className="grow flex items-center justify-center">
-                <PlayerDetailCarouselLabel>Preseason</PlayerDetailCarouselLabel>
-              </div>
-              <button
-                type="button"
-                className="flex items-center justify-center w-9 h-9 border-l"
-              >
-                <Icon type="chevron" className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-          <SheetFooter>
-            <Button variant="outline">
-              Move To Bench
-              <Icon type="transfer" className="w-5 h-5 inline-block" />
-            </Button>
+              <SheetFooter>
+                <Button variant="outline">
+                  Move To Bench
+                  <Icon type="transfer" className="w-5 h-5 inline-block" />
+                </Button>
 
-            <Button variant="secondary">
-              REMOVE FROM HERD
-              <Icon type="transfer" className="w-5 h-5 inline-block bg-white" />
-            </Button>
-          </SheetFooter>
+                <Button variant="secondary">
+                  REMOVE FROM HERD
+                  <Icon
+                    type="transfer"
+                    className="w-5 h-5 inline-block bg-white"
+                  />
+                </Button>
+              </SheetFooter>
+            </>
+          )}
         </SheetContent>
       </SheetPortal>
     </Sheet>
