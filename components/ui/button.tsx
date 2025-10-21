@@ -1,23 +1,29 @@
-import * as React from "react";
+import ButtonBackground from "@/app/assets/button-background.png";
+import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import ButtonBackground from "@/app/assets/button-background.png";
-import Image from "next/image";
+import * as React from "react";
 
 const buttonVariants = cva(
-  "flex items-center justify-center transition-color ease-default duration-300",
+  "flex items-center justify-center transition-color ease-default duration-300 gap-2",
   {
     variants: {
       variant: {
         default: "",
-        primary: "",
-        outline: "border-foreground border hover:bg-foreground/4",
+        primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/90",
+        "outline-hard":
+          "border-foreground border text-foreground hover:bg-foreground/4 disabled:bg-transparent disabled:text-foreground/24",
+        outline:
+          "border-foreground/24 border text-foreground hover:bg-foreground/4 disabled:bg-transparent disabled:text-foreground/24",
         pattern: "bg-foreground text-background hover:bg-foreground/80",
       },
       size: {
-        default: "",
-        fixed: "py-[14px] w-[146px]",
+        default:
+          "w-full h-[44px] font-paragraph text-[14px] leading-[82%] -tracking-[0.03em]",
+        fixed:
+          "py-[14px] w-[146px] text-[16px] font-paragraph text-[16px] leading-[128%] -tracking-[0.03em]",
       },
     },
     defaultVariants: {
@@ -74,32 +80,3 @@ function Button({
 }
 
 export { Button, buttonVariants };
-
-{
-  /* <Command>
-  <CommandInput placeholder="Search framework..." />
-  <CommandList>
-    <CommandEmpty>No framework found.</CommandEmpty>
-    <CommandGroup>
-      {frameworks.map((framework) => (
-        <CommandItem
-          key={framework.value}
-          value={framework.value}
-          onSelect={(currentValue) => {
-            setValue(currentValue === value ? "" : currentValue);
-            setOpen(false);
-          }}
-        >
-          <CheckIcon
-            className={cn(
-              "mr-2 h-4 w-4",
-              value === framework.value ? "opacity-100" : "opacity-0",
-            )}
-          />
-          {framework.label}
-        </CommandItem>
-      ))}
-    </CommandGroup>
-  </CommandList>
-</Command> */
-}

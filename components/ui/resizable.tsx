@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  clamp,
+  motion,
+  MotionValue,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import * as React from "react";
 import {
   createContext,
@@ -10,20 +17,15 @@ import {
   useState,
 } from "react";
 
-type PanelData = {
-  defaultSizes: number;
-  minSize?: number;
-  maxSize?: number;
-};
-
-const ResizableContext = createContext({
-  sizes: [0, 0],
-  registerPanel: (
-    index: number,
-    defaultSize: number,
-    minSize?: number,
-    maxSize?: number,
-  ) => {},
+const ResizableContext = createContext<{
+  sizes: MotionValue<[number, number]>;
+  cursor: MotionValue<string>;
+  onHandleDown: (e: PointerEvent) => void;
+  onHandleMove: (e: PointerEvent) => void;
+  onHandleUp: (e: PointerEvent) => void;
+}>({
+  sizes: new MotionValue([50, 50]),
+  cursor: new MotionValue("grab"),
   onHandleDown: (e: PointerEvent) => {},
   onHandleMove: (e: PointerEvent) => {},
   onHandleUp: (e: PointerEvent) => {},
@@ -33,128 +35,102 @@ const useResizable = () => {
   return useContext(ResizableContext);
 };
 
-export const ResizablePanelGroup: React.FC<React.PropsWithChildren> = ({
-  children,
-}) => {
-  const [sizes, setSizes] = useState([50, 50]);
-  const [panelData, setPanelData] = useState<PanelData[]>([
-    {
-      defaultSizes: 50,
-      minSize: undefined,
-      maxSize: undefined,
-    },
-    {
-      defaultSizes: 50,
-      minSize: undefined,
-      maxSize: undefined,
-    },
-  ]);
+export const ResizablePanelGroup: React.FC<
+  React.PropsWithChildren<{
+    maxSize: [number | undefined, number | undefined];
+    minSize: [number | undefined, number | undefined];
+    defaultSize: [number | undefined, number | undefined];
+  }>
+> = ({ maxSize, minSize, defaultSize, children }) => {
+  const [hasRendered, setHasRendered] = useState(false);
+
+  const sizes = useMotionValue<[number, number]>([50, 50]);
+  const cursor = useMotionValue("grab");
 
   const dataRef = useRef({
     isResizing: false,
     startX: 0,
-    startSizes: [50, 50],
-    currentSizes: [50, 50],
+    currentSize: 0,
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const registerPanel = useCallback(
-    (
-      index: number,
-      defaultSize: number,
-      minSize?: number,
-      maxSize?: number,
-    ) => {
-      setPanelData((prev) => {
-        const newData = [...prev];
+  const resize = useCallback(
+    (targetX: number) => {
+      const container = containerRef.current;
+      if (!container) return;
 
-        newData[index] = { defaultSizes: defaultSize, minSize, maxSize };
+      const containerBox = container.getBoundingClientRect();
 
-        return newData;
-      });
+      let firstWidth = clamp(0, maxSize[0] ?? Infinity, targetX);
+
+      if (
+        firstWidth < (minSize[0] ?? 0) / 2 ||
+        (minSize[0] ?? 0) + (minSize[1] ?? 0) > containerBox.width
+      ) {
+        firstWidth = 0;
+      } else if (containerBox.width - (minSize[1] ?? 0) < firstWidth) {
+        firstWidth = containerBox.width - (minSize[1] ?? 0);
+      } else {
+        firstWidth = clamp(minSize[0] ?? 0, maxSize[0] ?? Infinity, targetX);
+      }
+
+      const firstX = (firstWidth / containerBox.width) * 100;
+
+      dataRef.current.currentSize = firstWidth;
+
+      sizes.set([firstX, 100 - firstX]);
     },
-    [],
+    [sizes, maxSize, minSize],
   );
 
   useEffect(() => {
-    // const totalDefaultSize = panelData.reduce(
-    //   (acc, panel) => acc + panel.defaultSizes,
-    //   0,
-    // );
+    resize(defaultSize[0] ?? 0);
 
-    if (!containerRef.current) return;
+    const resizeHandler = () => {
+      resize(dataRef.current.currentSize);
+    };
 
-    const firstPanel = panelData[0];
-    const secondPanel = panelData[1];
+    window.addEventListener("resize", resizeHandler);
+    setHasRendered(true);
 
-    let firstPanelWidth = 0;
-    let secondPanelWidth = 0;
-
-    let width = containerRef.current.clientWidth;
-
-    if (firstPanel.minSize) {
-      firstPanelWidth = firstPanel.minSize;
-      width -= firstPanelWidth;
-    }
-
-    if (secondPanel.minSize) {
-      secondPanelWidth = secondPanel.minSize;
-      width -= secondPanelWidth;
-    }
-
-    if (width < 0) {
-    }
-    // firstPanel.defaultSizes
-
-    // setSizes();
-  }, [panelData]);
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
+  }, [resize, defaultSize]);
 
   return (
     <ResizableContext.Provider
       value={{
-        sizes,
-        registerPanel,
+        sizes: sizes,
+        cursor: cursor,
         onHandleDown: (e: PointerEvent) => {
-          console.log("down");
-
           dataRef.current.isResizing = true;
           dataRef.current.startX = e.clientX;
-          dataRef.current.startSizes = sizes;
+
+          cursor.set("grabbing");
         },
         onHandleMove: (e: PointerEvent) => {
-          if (!dataRef.current.isResizing || !containerRef.current) {
+          if (!dataRef.current.isResizing) {
             return;
           }
-          console.log("move");
 
-          const containerBox = containerRef.current.getBoundingClientRect();
+          const container = containerRef.current;
+          if (!container) return;
 
-          const firstX =
-            ((e.clientX - containerBox.x) / containerBox.width) * 100;
+          const containerBox = container.getBoundingClientRect();
 
-          dataRef.current.currentSizes[0] = firstX;
-          dataRef.current.currentSizes[1] = 100 - firstX;
-
-          // const newSize1 = dataRef.current.startSizes[0] + deltaRatio * 100;
-          // const newSize2 = dataRef.current.startSizes[1] - deltaRatio * 100;
-
-          setSizes([
-            dataRef.current.currentSizes[0],
-            dataRef.current.currentSizes[1],
-          ]);
+          resize(e.clientX - containerBox.x);
         },
         onHandleUp: (e: PointerEvent) => {
-          console.log("up");
-
-          // console.log(newSize1, newSize2);
-
           dataRef.current.isResizing = false;
+
+          cursor.set("grab");
         },
       }}
     >
       <div className="flex w-full h-full" ref={containerRef}>
-        {children}
+        {hasRendered && children}
       </div>
     </ResizableContext.Provider>
   );
@@ -163,29 +139,26 @@ export const ResizablePanelGroup: React.FC<React.PropsWithChildren> = ({
 export const ResizablePanel: React.FC<
   React.PropsWithChildren<{
     index: number;
-    defaultSize: number;
-    minSize?: number;
-    maxSize?: number;
   }>
-> = ({ index, defaultSize, minSize, maxSize, children }) => {
-  const { sizes, registerPanel } = useResizable();
+> = ({ index, children }) => {
+  const { sizes } = useResizable();
 
-  useEffect(() => {
-    registerPanel(index, defaultSize, minSize, maxSize);
-  }, [registerPanel, defaultSize, minSize, maxSize, index]);
+  const width = useTransform(sizes, (value) => {
+    return `${value[index]}%`;
+  });
 
   return (
-    <div
-      className="relative h-full w-1/2"
-      style={{ width: `${sizes[index]}%` }}
+    <motion.div
+      className="relative h-full w-1/2 overflow-hidden"
+      style={{ width: width }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 };
 
 export const ResizableHandle: React.FC = () => {
-  const { onHandleDown, onHandleMove, onHandleUp } = useResizable();
+  const { cursor, onHandleDown, onHandleMove, onHandleUp } = useResizable();
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -205,12 +178,18 @@ export const ResizableHandle: React.FC = () => {
   }, [onHandleDown, onHandleMove, onHandleUp]);
 
   return (
-    <div className="relative h-full border-r">
-      <div
-        ref={ref}
-        className="w-5 absolute inset-y-0 left-1/2 -translate-x-1/2 bg-green-400"
-      >
-        {/* <GripVerticalIcon /> */}
+    <div className="relative h-full">
+      <div className="absolute inset-y-6 left-1/2 -translate-x-1/2 border-r z-10">
+        <motion.div
+          ref={ref}
+          className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-[calc(50%-0.5px)] h-[46px] bg-background flex items-center justify-center gap-[2px] p-2 select-none"
+          style={{
+            cursor,
+          }}
+        >
+          <div className="border-r h-6" />
+          <div className="border-r h-6" />
+        </motion.div>
       </div>
     </div>
   );

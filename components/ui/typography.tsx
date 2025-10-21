@@ -253,7 +253,7 @@ export const TableListHeader: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-paragraph text-[10px] leading-[82%] tracking-[0.04em]`,
+        `font-paragraph text-[10px] leading-[82%] tracking-[0.04em] font-normal text-left`,
         className,
       )}
     >
@@ -355,7 +355,7 @@ export const PlayerDetailTitle: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-title text-[64px] leading-[74%] tracking-[0em]`,
+        `font-title text-[48px] leading-[74%] tracking-[0em]`,
         className,
       )}
     >
@@ -389,7 +389,7 @@ export const PlayerDetailValue: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-paragraph text-[28px] leading-[128%] -tracking-[0.02em]`,
+        `font-paragraph text-[28px] leading-[96%] -tracking-[0.02em]`,
         className,
       )}
     >
@@ -440,7 +440,7 @@ export const PlayerDetailTableHeader: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-paragraph text-[10px] leading-[82%] tracking-[0.04em] uppercase`,
+        `font-paragraph text-[10px] leading-[82%] tracking-[0.04em] font-normal uppercase`,
         className,
       )}
     >
@@ -492,23 +492,6 @@ export const PlayerCardViewHelperLabel: React.FC<Props> = (props) => {
     <Comp
       className={cn(
         `font-paragraph text-[14px] leading-[82%] -tracking-[0.03em] uppercase`,
-        className,
-      )}
-    >
-      {children}
-    </Comp>
-  );
-};
-
-export const FieldLabel: React.FC<Props> = (props) => {
-  const { className, asChild, children } = props;
-
-  const Comp = asChild ? Slot : "label";
-
-  return (
-    <Comp
-      className={cn(
-        `font-paragraph text-[14px] leading-[132%] -tracking-[0.03em]`,
         className,
       )}
     >

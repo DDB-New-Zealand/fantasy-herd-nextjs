@@ -13,7 +13,6 @@ import {
   ButtonLabelSmall,
   CheckCardDescription,
   CheckCardTitle,
-  FieldLabel,
   HelperLabel,
   HomeFooter,
   HomeParagraph,
@@ -59,7 +58,7 @@ const Page = () => {
 
   return (
     <div className="grid grid-cols-12 h-svh relative">
-      <div className="relative col-start-1 col-end-10 p-6 flex flex-col">
+      <div className="relative col-start-1 col-end-10 p-6 flex flex-col bg-background">
         <BannerLabel>Banner Label - GAME WEEK 1</BannerLabel>
         <HomeTitle>
           {`Home Title
@@ -73,8 +72,6 @@ const Page = () => {
         <WeatherWidgetTitle>Weather Widget Title</WeatherWidgetTitle>
         <WeatherLabel>Weather Label</WeatherLabel>
         <WeatherValue>Weather Value - 19°</WeatherValue>
-        <ButtonLabel>Button Label</ButtonLabel>
-        <ButtonLabelSmall>Button Label Small</ButtonLabelSmall>
         <PageTitle>Page Title - Welcome to Fantasy herd,.</PageTitle>
         <PageDescription>
           Page description - Lorem ipsum dolor sit amet, consectetur
@@ -175,7 +172,6 @@ const Page = () => {
           Player Detail Table Value
         </PlayerDetailTableValue>
         <PlayerCardViewHelperLabel>Tap to flip</PlayerCardViewHelperLabel>
-        <FieldLabel>Field Label</FieldLabel>
         <SummaryValue>Summary Value</SummaryValue>
         <SummaryValueLabel>Summary Value Label</SummaryValueLabel>
         <SummaryLabel>Summary Label</SummaryLabel>

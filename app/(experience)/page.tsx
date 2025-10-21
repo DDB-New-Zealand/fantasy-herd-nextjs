@@ -55,7 +55,7 @@ export default async function Home({
                 Sign in
               </Button>
             </Link>
-            <Button variant={"outline"} size={"fixed"} asChild>
+            <Button variant={"outline-hard"} size={"fixed"} asChild>
               <Link href={"/register"}>Register Now</Link>
             </Button>
           </div>

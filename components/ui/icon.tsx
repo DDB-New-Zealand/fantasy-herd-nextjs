@@ -16,7 +16,10 @@ export type IconType =
   | "flag"
   | "scan"
   | "transfer"
-  | "user";
+  | "user"
+  | "search"
+  | "plus"
+  | "chevron";
 
 type Props = {
   type: IconType;
