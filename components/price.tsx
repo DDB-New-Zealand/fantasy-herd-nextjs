@@ -1,11 +1,15 @@
+import { cn } from "@/lib/utils";
+
 export const Price: React.FC<{
+  className?: string;
+  iconClassName?: string;
   children: React.ReactNode;
-}> = ({ children }) => {
+}> = ({ children, className, iconClassName }) => {
   return (
-    <span className="inline-flex">
+    <span className={cn("inline-flex", className)}>
       {children}
       <svg
-        className="mt-1"
+        className={cn(iconClassName)}
         width="10"
         height="8"
         viewBox="0 0 10 8"

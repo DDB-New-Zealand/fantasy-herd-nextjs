@@ -44,6 +44,12 @@ export const ResizablePanelGroup: React.FC<
 > = ({ maxSize, minSize, defaultSize, children }) => {
   const [hasRendered, setHasRendered] = useState(false);
 
+  const memoRef = useRef({
+    maxSize,
+    minSize,
+    defaultSize,
+  });
+
   const sizes = useMotionValue<[number, number]>([50, 50]);
   const cursor = useMotionValue("grab");
 
@@ -62,17 +68,29 @@ export const ResizablePanelGroup: React.FC<
 
       const containerBox = container.getBoundingClientRect();
 
-      let firstWidth = clamp(0, maxSize[0] ?? Infinity, targetX);
+      let firstWidth = clamp(
+        0,
+        memoRef.current.maxSize[0] ?? Infinity,
+        targetX,
+      );
 
       if (
-        firstWidth < (minSize[0] ?? 0) / 2 ||
-        (minSize[0] ?? 0) + (minSize[1] ?? 0) > containerBox.width
+        firstWidth < (memoRef.current.minSize[0] ?? 0) / 2 ||
+        (memoRef.current.minSize[0] ?? 0) + (memoRef.current.minSize[1] ?? 0) >
+          containerBox.width
       ) {
         firstWidth = 0;
-      } else if (containerBox.width - (minSize[1] ?? 0) < firstWidth) {
-        firstWidth = containerBox.width - (minSize[1] ?? 0);
+      } else if (
+        containerBox.width - (memoRef.current.minSize[1] ?? 0) <
+        firstWidth
+      ) {
+        firstWidth = containerBox.width - (memoRef.current.minSize[1] ?? 0);
       } else {
-        firstWidth = clamp(minSize[0] ?? 0, maxSize[0] ?? Infinity, targetX);
+        firstWidth = clamp(
+          memoRef.current.minSize[0] ?? 0,
+          memoRef.current.maxSize[0] ?? Infinity,
+          targetX,
+        );
       }
 
       const firstX = (firstWidth / containerBox.width) * 100;
@@ -81,11 +99,11 @@ export const ResizablePanelGroup: React.FC<
 
       sizes.set([firstX, 100 - firstX]);
     },
-    [sizes, maxSize, minSize],
+    [sizes],
   );
 
   useEffect(() => {
-    resize(defaultSize[0] ?? 0);
+    resize(memoRef.current.defaultSize[0] ?? 0);
 
     const resizeHandler = () => {
       resize(dataRef.current.currentSize);
@@ -97,7 +115,7 @@ export const ResizablePanelGroup: React.FC<
     return () => {
       window.removeEventListener("resize", resizeHandler);
     };
-  }, [resize, defaultSize]);
+  }, [resize]);
 
   return (
     <ResizableContext.Provider
@@ -129,7 +147,7 @@ export const ResizablePanelGroup: React.FC<
         },
       }}
     >
-      <div className="flex w-full h-full" ref={containerRef}>
+      <div className="absolute inset-0 flex w-full h-full" ref={containerRef}>
         {hasRendered && children}
       </div>
     </ResizableContext.Provider>

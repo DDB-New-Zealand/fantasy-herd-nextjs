@@ -8,15 +8,17 @@ import {
 export type Rating = "A+" | "A" | "A-" | "B+" | "B" | "B-" | "C+" | "C" | "C-";
 
 type Props = {
-  size?: "sm" | "lg";
+  size?: "sm" | "table" | "lg";
   rating: Rating;
 };
 
 export const Rating = ({ size = "sm", rating }: Props) => {
   return (
     <div className="flex items-center justify-between">
-      {size === "sm" ? (
+      {size === "table" ? (
         <TableValue className="flex items-center w-[36px]">{rating}</TableValue>
+      ) : size === "sm" ? (
+        <TableValue className="flex items-center pr-[2px]">{rating}</TableValue>
       ) : (
         <div className="flex flex-col items-start justify-center pr-[9px]">
           <PlayerDetailValue>{rating}</PlayerDetailValue>
@@ -25,7 +27,8 @@ export const Rating = ({ size = "sm", rating }: Props) => {
       )}
       <div
         className={cn("relative border border-foreground bg-foreground", {
-          "min-w-[8px] h-[16px] rounded-[1px]": size === "sm",
+          "min-w-[8px] h-[16px] rounded-[1px]":
+            size === "sm" || size === "table",
           "min-w-[12px] h-[33px] rounded-[2px]": size === "lg",
         })}
       >

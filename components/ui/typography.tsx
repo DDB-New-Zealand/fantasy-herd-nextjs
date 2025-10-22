@@ -287,7 +287,7 @@ export const TableValue: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-paragraph text-[20px] leading-[128%] -tracking-[0.03em]`,
+        `font-paragraph text-[20px] leading-[72%] -tracking-[0.03em]`,
         className,
       )}
     >
@@ -492,6 +492,57 @@ export const PlayerCardViewHelperLabel: React.FC<Props> = (props) => {
     <Comp
       className={cn(
         `font-paragraph text-[14px] leading-[82%] -tracking-[0.03em] uppercase`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
+export const WalletPriceLabel: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "span";
+
+  return (
+    <Comp
+      className={cn(
+        `font-paragraph text-[16px] leading-[72%] -tracking-[0.03em]`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
+export const DraggableCardLabel: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "span";
+
+  return (
+    <Comp
+      className={cn(
+        `font-paragraph text-[20px] leading-[72%] -tracking-[0.03em] uppercase`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
+export const DraggableCardTitle: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "span";
+
+  return (
+    <Comp
+      className={cn(
+        `font-title text-[32px] leading-[82%] tracking-[0.02em]`,
         className,
       )}
     >
