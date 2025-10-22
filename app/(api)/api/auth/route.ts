@@ -1,6 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
-export async function GET(_: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
   return new Response("Authentication Required!", {
     status: 401,
     headers: {

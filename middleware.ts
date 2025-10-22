@@ -13,13 +13,9 @@ export function middleware(req: NextRequest) {
     return;
   }
 
-  console.log(basicAuth);
-
   if (basicAuth) {
     const authValue = basicAuth.split(" ")[1];
     const [user, pwd] = atob(authValue).split(":");
-
-    console.log(authValue, user, pwd);
 
     const validUser = process.env.BASIC_AUTH_USER;
     const validPassWord = process.env.BASIC_AUTH_PASSWORD;
