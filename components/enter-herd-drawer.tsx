@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AlertBanner } from "./banner";
 import { Button } from "./ui/button";
 import { SheetHeader } from "./ui/cow-detail-sheet";
@@ -10,7 +11,7 @@ import { AnnotationLabel, PageTitle } from "./ui/typography";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (text: string) => void;
 };
 
 export const EnterHerdDrawer: React.FC<Props> = ({
@@ -18,6 +19,8 @@ export const EnterHerdDrawer: React.FC<Props> = ({
   onClose,
   onSubmit,
 }) => {
+  const [text, setText] = useState("");
+
   return (
     <Sheet
       open={open}
@@ -35,7 +38,11 @@ export const EnterHerdDrawer: React.FC<Props> = ({
           <Field>
             <FieldLabel>Pick your herd name</FieldLabel>
             <div className="relative">
-              <Input placeholder="Search by name, num, price or rating" />
+              <Input
+                placeholder="Search by name, num, price or rating"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              />
               <FieldHelpText>
                 THis name can be changed later in settings.
               </FieldHelpText>
@@ -54,7 +61,7 @@ export const EnterHerdDrawer: React.FC<Props> = ({
           <Button
             variant={"secondary"}
             onClick={() => {
-              onSubmit();
+              onSubmit(text);
             }}
           >
             Enter Herd

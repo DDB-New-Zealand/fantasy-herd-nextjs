@@ -1,8 +1,8 @@
+import { CowData } from "@/constants/cows";
 import { cn } from "@/lib/utils";
-import Placeholder from "../ui/placeholder";
-import { CowData } from "@/app/(experience)/herd/page";
 import { Price } from "../price";
 import { Rating } from "../rating";
+import Placeholder from "../ui/placeholder";
 import { DraggableCardLabel, DraggableCardTitle } from "../ui/typography";
 
 export const CowDraggableCardPlaceHolder = () => {

@@ -6,9 +6,20 @@ import { SidebarButtonRender } from "./sidebar";
 import { Command, CommandItem, CommandList } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Icon from "./ui/icon";
+import { useEffect, useState } from "react";
 
 export const ThemeButton = () => {
   const { theme, setTheme } = useTheme();
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMounted(true);
+    }
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <Popover>

@@ -9,7 +9,6 @@ import {
 } from "@/components/cow/draggable-cards";
 import { CowRow } from "@/components/cow/row";
 import { EnterHerdDrawer } from "@/components/enter-herd-drawer";
-import { Rating } from "@/components/rating";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import Icon from "@/components/ui/icon";
@@ -26,167 +25,23 @@ import {
   TableListHeader,
 } from "@/components/ui/typography";
 import { Wallet } from "@/components/wallet";
+import { COW_DATA, CowData } from "@/constants/cows";
 import { cn } from "@/lib/utils";
-import { UserProvider } from "@/stores/user-store";
+import useUserStore, { Herd, UserProvider } from "@/stores/user-store";
 import { useState } from "react";
 
-export type CowData = {
-  id: string;
-  name: string;
-  price: number;
-  rating: Rating;
-};
-
-const COW_DATA: CowData[] = [
-  {
-    id: "1",
-    name: "Bessie",
-    price: 12,
-    rating: "A+",
-  },
-  {
-    id: "2",
-    name: "MooMoo",
-    price: 8,
-    rating: "B",
-  },
-  {
-    id: "3",
-    name: "Milkwood",
-    price: 19,
-    rating: "C",
-  },
-  {
-    id: "4",
-    name: "LongHorns",
-    price: 15,
-    rating: "A",
-  },
-  {
-    id: "5",
-    name: "Daisy",
-    price: 22,
-    rating: "A+",
-  },
-  {
-    id: "6",
-    name: "Thunder",
-    price: 35,
-    rating: "A+",
-  },
-  {
-    id: "7",
-    name: "Clover",
-    price: 6,
-    rating: "C",
-  },
-  {
-    id: "8",
-    name: "Buttercup",
-    price: 14,
-    rating: "B+",
-  },
-  {
-    id: "9",
-    name: "Tornado",
-    price: 28,
-    rating: "A",
-  },
-  {
-    id: "10",
-    name: "Patches",
-    price: 9,
-    rating: "B",
-  },
-  {
-    id: "11",
-    name: "Moonbeam",
-    price: 31,
-    rating: "A+",
-  },
-  {
-    id: "12",
-    name: "Rusty",
-    price: 7,
-    rating: "C+",
-  },
-  {
-    id: "13",
-    name: "Starlight",
-    price: 25,
-    rating: "A",
-  },
-  {
-    id: "14",
-    name: "Blizzard",
-    price: 42,
-    rating: "A+",
-  },
-  {
-    id: "15",
-    name: "Meadow",
-    price: 11,
-    rating: "B",
-  },
-  {
-    id: "16",
-    name: "Champion",
-    price: 38,
-    rating: "A+",
-  },
-  {
-    id: "17",
-    name: "Sprinkles",
-    price: 13,
-    rating: "B+",
-  },
-  {
-    id: "18",
-    name: "Storm",
-    price: 29,
-    rating: "A",
-  },
-  {
-    id: "19",
-    name: "Cookie",
-    price: 5,
-    rating: "C",
-  },
-  {
-    id: "20",
-    name: "Lightning",
-    price: 45,
-    rating: "A+",
-  },
-];
-
 export default function HerdPage() {
+  const {
+    herd,
+    autoPickHerd,
+    resetHerd,
+    addCowToHerd,
+    removeCowFromHerd,
+    enterHerd,
+  } = useUserStore();
+
   const [cow, setCow] = useState<CowData | null>(null);
   const [openEnterHerd, setOpenEnterHerd] = useState(false);
-
-  const [herd, setHerd] = useState<{
-    "starter-1": CowData | undefined;
-    "starter-2": CowData | undefined;
-    "starter-3": CowData | undefined;
-    "starter-4": CowData | undefined;
-    "starter-5": CowData | undefined;
-    "benched-1": CowData | undefined;
-    "benched-2": CowData | undefined;
-    "benched-3": CowData | undefined;
-    "benched-4": CowData | undefined;
-    "benched-5": CowData | undefined;
-  }>({
-    "starter-1": undefined,
-    "starter-2": undefined,
-    "starter-3": undefined,
-    "starter-4": undefined,
-    "starter-5": undefined,
-    "benched-1": undefined,
-    "benched-2": undefined,
-    "benched-3": undefined,
-    "benched-4": undefined,
-    "benched-5": undefined,
-  });
 
   const benchedCows = Object.keys(herd)
     .filter((key) => {
@@ -215,43 +70,6 @@ export default function HerdPage() {
 
   const hasSelected = benchedCows.length + starterCows.length > 0;
   const hasHerdFilled = starterCows.length === 5 && benchedCows.length === 5;
-
-  const onAutoPick = () => {
-    const sortedCows = [...COW_DATA].sort((a, b) => {
-      const ratingOrder = ["C", "C+", "B", "B+", "A", "A+", "S"];
-      const getRatingIndex = (r: string) => ratingOrder.indexOf(r);
-      return getRatingIndex(b.rating) - getRatingIndex(a.rating);
-    });
-    const picked = sortedCows.slice(0, 10);
-
-    setHerd({
-      "starter-1": picked[0],
-      "starter-2": picked[1],
-      "starter-3": picked[2],
-      "starter-4": picked[3],
-      "starter-5": picked[4],
-      "benched-1": picked[5],
-      "benched-2": picked[6],
-      "benched-3": picked[7],
-      "benched-4": picked[8],
-      "benched-5": picked[9],
-    });
-  };
-
-  const onReset = () => {
-    setHerd({
-      "starter-1": undefined,
-      "starter-2": undefined,
-      "starter-3": undefined,
-      "starter-4": undefined,
-      "starter-5": undefined,
-      "benched-1": undefined,
-      "benched-2": undefined,
-      "benched-3": undefined,
-      "benched-4": undefined,
-      "benched-5": undefined,
-    });
-  };
 
   return (
     <div className="relative w-full h-full">
@@ -315,30 +133,26 @@ export default function HerdPage() {
                           setCow(cow);
                         }}
                         onAdd={() => {
-                          setHerd((prev) => {
-                            const newHerd = { ...prev };
+                          if (isAdded) {
+                            let herdKey: keyof Herd = "starter-1";
 
-                            if (isAdded) {
-                              for (const key in newHerd) {
-                                if (
-                                  newHerd[key as keyof typeof newHerd]?.id ===
-                                  cow.id
-                                ) {
-                                  newHerd[key as keyof typeof newHerd] =
-                                    undefined;
-                                  break;
-                                }
+                            for (const key in herd) {
+                              // herdKey =
+                              if (herd[key as keyof Herd]?.id === cow.id) {
+                                herdKey = key as keyof Herd;
                               }
-                            } else {
-                              for (const key of Object.keys(newHerd)) {
-                                if (!newHerd[key as keyof typeof newHerd]) {
-                                  newHerd[key as keyof typeof newHerd] = cow;
-                                  break;
-                                }
+                              break;
+                            }
+
+                            removeCowFromHerd(herdKey);
+                          } else {
+                            for (const key of Object.keys(herd)) {
+                              if (!herd[key as keyof Herd]) {
+                                addCowToHerd(cow, key as keyof Herd);
+                                break;
                               }
                             }
-                            return newHerd;
-                          });
+                          }
                         }}
                         added={isAdded}
                       />
@@ -447,7 +261,7 @@ export default function HerdPage() {
                   variant={"outline"}
                   className="border-foreground/24"
                   onClick={() => {
-                    onAutoPick();
+                    autoPickHerd();
                   }}
                 >
                   Auto pick
@@ -457,7 +271,7 @@ export default function HerdPage() {
                   className="border-foreground/24"
                   disabled={!hasSelected}
                   onClick={() => {
-                    onReset();
+                    resetHerd();
                   }}
                 >
                   Reset
@@ -496,7 +310,11 @@ export default function HerdPage() {
         onClose={() => {
           setOpenEnterHerd(false);
         }}
-        onSubmit={() => {}}
+        onSubmit={(text) => {
+          enterHerd(text);
+
+          setOpenEnterHerd(false);
+        }}
       />
     </div>
   );

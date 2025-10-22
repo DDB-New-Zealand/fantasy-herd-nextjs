@@ -1,15 +1,20 @@
-import { DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import { CowData } from "@/constants/cows";
+import { delay } from "motion";
+import { useEffect, useState } from "react";
+import { Price } from "../price";
+import { Rating } from "../rating";
+import { Button } from "../ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetOverlay,
   SheetPortal,
   SheetTitle,
 } from "../ui/cow-detail-sheet";
-import { Button } from "../ui/button";
+import Icon from "../ui/icon";
+import Placeholder from "../ui/placeholder";
 import {
   PlayerDetailCarouselLabel,
   PlayerDetailLabel,
@@ -18,15 +23,7 @@ import {
   PlayerDetailTableValue,
   PlayerDetailTitle,
   PlayerDetailValue,
-  SummaryValue,
 } from "../ui/typography";
-import Placeholder from "../ui/placeholder";
-import { Price } from "../price";
-import { Rating } from "../rating";
-import Icon from "../ui/icon";
-import { useEffect, useState } from "react";
-import { CowData } from "@/app/(experience)/herd/page";
-import { delay } from "motion";
 
 type Props = {
   selectedData: CowData | null;
