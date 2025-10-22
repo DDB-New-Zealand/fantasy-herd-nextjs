@@ -77,7 +77,7 @@ function SheetContent({
       {children}
       <SheetPrimitive.Close
         className={cn(
-          "absolute top-6 right-6 border w-10 h-10 flex items-center justify-center hover:bg-foreground/4 disabled:pointer-events-none",
+          "absolute top-6 right-6 border border-foreground/24 w-10 h-10 flex items-center justify-center hover:bg-foreground/4 disabled:pointer-events-none",
           "focus:ring-ring focus:ring-1 focus:outline-hidden",
           "transition-colors ease-default duration-200",
         )}

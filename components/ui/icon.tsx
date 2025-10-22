@@ -19,7 +19,8 @@ export type IconType =
   | "user"
   | "search"
   | "plus"
-  | "chevron";
+  | "chevron"
+  | "info";
 
 type Props = {
   type: IconType;

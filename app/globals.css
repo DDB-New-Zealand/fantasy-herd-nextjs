@@ -30,6 +30,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-info: var(--info);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-destructive: var(--destructive);
@@ -130,6 +131,8 @@
   --moss-green: #192319;
   --meadow-fresh-primary: #50b848;
   --meadow-fresh-forest-green: #008047;
+
+  --alert-info: #bdeaff;
   --rating-success: #0fe95c;
   --rating-warning: #f5c000;
   --rating-error: #e82c17;
@@ -145,7 +148,7 @@
   --border: var(--darker-grey);
 
   --muted: var(--darker-grey);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: var(--moss-green);
 
   --card: var(--grey);
   --card-foreground: var(--moss-green);
@@ -159,6 +162,7 @@
   --input: var(--darker-grey);
   --ring: var(--moss-green);
 
+  --info: var(--alert-info);
   --success: var(--rating-success);
   --warning: var(--rating-warning);
   --destructive: var(--rating-error);
@@ -211,7 +215,7 @@
   --border: var(--green-grey);
 
   --muted: var(--green-grey);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: var(--grey);
 
   --card: var(--deep-green);
   --card-foreground: var(--grey);
@@ -225,6 +229,7 @@
   --input: var(--green-grey);
   --ring: var(--grey);
 
+  --info: var(--alert-info);
   --success: var(--rating-success);
   --warning: var(--rating-warning);
   --destructive: var(--rating-error);

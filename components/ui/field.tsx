@@ -230,6 +230,19 @@ function FieldError({
   );
 }
 
+function FieldHelpText({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      data-slot="field-help-text"
+      className={cn(
+        "bg-muted text-muted-foreground/48 text-[12px] leading-[82%] -tracking-[0.03em] font-normal px-3 py-3",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export {
   Field,
   FieldLabel,
@@ -241,4 +254,5 @@ export {
   FieldSet,
   FieldContent,
   FieldTitle,
+  FieldHelpText,
 };

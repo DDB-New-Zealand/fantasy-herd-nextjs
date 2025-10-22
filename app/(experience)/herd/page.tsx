@@ -8,6 +8,7 @@ import {
   CowDraggableCardPlaceHolderField,
 } from "@/components/cow/draggable-cards";
 import { CowRow } from "@/components/cow/row";
+import { EnterHerdDrawer } from "@/components/enter-herd-drawer";
 import { Rating } from "@/components/rating";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -161,6 +162,7 @@ const COW_DATA: CowData[] = [
 
 export default function HerdPage() {
   const [cow, setCow] = useState<CowData | null>(null);
+  const [openEnterHerd, setOpenEnterHerd] = useState(false);
 
   const [herd, setHerd] = useState<{
     "starter-1": CowData | undefined;
@@ -210,6 +212,46 @@ export default function HerdPage() {
       return herd[key as keyof typeof herd];
     })
     .filter((key) => key !== undefined);
+
+  const hasSelected = benchedCows.length + starterCows.length > 0;
+  const hasHerdFilled = starterCows.length === 5 && benchedCows.length === 5;
+
+  const onAutoPick = () => {
+    const sortedCows = [...COW_DATA].sort((a, b) => {
+      const ratingOrder = ["C", "C+", "B", "B+", "A", "A+", "S"];
+      const getRatingIndex = (r: string) => ratingOrder.indexOf(r);
+      return getRatingIndex(b.rating) - getRatingIndex(a.rating);
+    });
+    const picked = sortedCows.slice(0, 10);
+
+    setHerd({
+      "starter-1": picked[0],
+      "starter-2": picked[1],
+      "starter-3": picked[2],
+      "starter-4": picked[3],
+      "starter-5": picked[4],
+      "benched-1": picked[5],
+      "benched-2": picked[6],
+      "benched-3": picked[7],
+      "benched-4": picked[8],
+      "benched-5": picked[9],
+    });
+  };
+
+  const onReset = () => {
+    setHerd({
+      "starter-1": undefined,
+      "starter-2": undefined,
+      "starter-3": undefined,
+      "starter-4": undefined,
+      "starter-5": undefined,
+      "benched-1": undefined,
+      "benched-2": undefined,
+      "benched-3": undefined,
+      "benched-4": undefined,
+      "benched-5": undefined,
+    });
+  };
 
   return (
     <div className="relative w-full h-full">
@@ -401,20 +443,32 @@ export default function HerdPage() {
                 )}
               </div>
               <div className="flex gap-3 items-center justify-center mt-9">
-                <Button variant={"outline"} className="border-foreground/24">
+                <Button
+                  variant={"outline"}
+                  className="border-foreground/24"
+                  onClick={() => {
+                    onAutoPick();
+                  }}
+                >
                   Auto pick
                 </Button>
                 <Button
                   variant={"outline"}
                   className="border-foreground/24"
-                  disabled
+                  disabled={!hasSelected}
+                  onClick={() => {
+                    onReset();
+                  }}
                 >
                   Reset
                 </Button>
                 <Button
                   variant={"outline"}
                   className="border-foreground/24"
-                  disabled
+                  disabled={!hasHerdFilled}
+                  onClick={() => {
+                    setOpenEnterHerd(true);
+                  }}
                 >
                   Enter Herd
                 </Button>
@@ -436,6 +490,13 @@ export default function HerdPage() {
         setOpen={(open) => {
           if (!open) setCow(null);
         }}
+      />
+      <EnterHerdDrawer
+        open={openEnterHerd}
+        onClose={() => {
+          setOpenEnterHerd(false);
+        }}
+        onSubmit={() => {}}
       />
     </div>
   );

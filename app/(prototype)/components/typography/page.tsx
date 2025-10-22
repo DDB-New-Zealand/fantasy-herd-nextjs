@@ -9,11 +9,8 @@ import {
 } from "@/components/ui/select";
 import {
   BannerLabel,
-  ButtonLabel,
-  ButtonLabelSmall,
   CheckCardDescription,
   CheckCardTitle,
-  HelperLabel,
   HomeFooter,
   HomeParagraph,
   HomeTitle,
@@ -185,7 +182,6 @@ const Page = () => {
         <SummaryTableValueSmall>
           Summary Table Value Small
         </SummaryTableValueSmall>
-        <HelperLabel>Helper label</HelperLabel>
         <PaginationValue>Pagination Value</PaginationValue>
         <PaginationLabel>Pagination Label</PaginationLabel>
       </div>

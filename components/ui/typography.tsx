@@ -738,23 +738,6 @@ export const SummaryTableValueSmall: React.FC<Props> = (props) => {
   );
 };
 
-export const HelperLabel: React.FC<Props> = (props) => {
-  const { className, asChild, children } = props;
-
-  const Comp = asChild ? Slot : "span";
-
-  return (
-    <Comp
-      className={cn(
-        `font-paragraph text-[10px] leading-[82%] tracking-[0.04em]`,
-        className,
-      )}
-    >
-      {children}
-    </Comp>
-  );
-};
-
 export const PaginationLabel: React.FC<Props> = (props) => {
   const { className, asChild, children } = props;
 
@@ -781,6 +764,40 @@ export const PaginationValue: React.FC<Props> = (props) => {
     <Comp
       className={cn(
         `font-paragraph text-[16px] leading-[128%] -tracking-[0.03em]`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
+export const AnnotationLabel: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "span";
+
+  return (
+    <Comp
+      className={cn(
+        `font-paragraph text-[12px] leading-[144%] -tracking-[0.03em] opacity-48`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
+export const AlertBannerParagraph: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "p";
+
+  return (
+    <Comp
+      className={cn(
+        `font-paragraph text-center text-[14px] leading-[128%] -tracking-[0.03em] uppercase`,
         className,
       )}
     >
