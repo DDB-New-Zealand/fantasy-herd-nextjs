@@ -462,7 +462,7 @@ const Page = () => {
             <div>24</div>
           </div>
         </div>
-        <div>Selected time: {time}</div>
+        <div>Selected time: {time.toFixed(3)}</div>
         <div>Real time: {realTime.toFixed(3)} hr</div>
         <div className="">
           use real time

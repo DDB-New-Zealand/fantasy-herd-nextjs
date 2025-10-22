@@ -1,8 +1,12 @@
 import { Sidebar } from "@/components/sidebar";
 import Debug from "./debug";
+import { UserProvider } from "@/stores/user-store";
+import { getCurrentUserServer } from "@/lib/cookie";
 
-const Layout: React.FC<React.PropsWithChildren> = (props) => {
+const Layout: React.FC<React.PropsWithChildren> = async (props) => {
   const { children } = props;
+
+  const user = await getCurrentUserServer();
 
   return (
     <>
@@ -12,6 +16,7 @@ const Layout: React.FC<React.PropsWithChildren> = (props) => {
         <Debug />
       </div>
       <footer></footer>
+      <UserProvider user={user.userData} />
     </>
   );
 };

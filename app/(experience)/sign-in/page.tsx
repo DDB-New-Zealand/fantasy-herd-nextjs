@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { PageDescription, PageTitle } from "@/components/ui/typography";
-import { UserProvider } from "@/stores/user-store";
+import { loginUserServer } from "@/lib/cookie";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -11,7 +11,8 @@ const SigninPage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push("/dashboard");
+      loginUserServer();
+      router.push("/");
     }, 1000);
   }, [router]);
 
@@ -21,7 +22,6 @@ const SigninPage = () => {
       <PageDescription>Redirecting to dashboard landing...</PageDescription>
       <PageDescription>If it does not automatically redirect </PageDescription>
       <Button>Click here</Button>
-      <UserProvider isLoggedIn={false} />
     </div>
   );
 };

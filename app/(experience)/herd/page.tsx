@@ -238,7 +238,6 @@ export default function HerdPage() {
         </ResizablePanel>
       </ResizablePanelGroup>
 
-      <UserProvider isLoggedIn />
       <DetailDrawer />
       <EnterHerdDrawer
         open={openEnterHerd}

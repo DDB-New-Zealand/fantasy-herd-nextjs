@@ -2,9 +2,8 @@ import { Banner } from "@/components/banner";
 import { CheckCard } from "@/components/checkcard";
 import Icon from "@/components/ui/icon";
 import { PageDescription, PageTitle } from "@/components/ui/typography";
-import { UserProvider } from "@/stores/user-store";
 
-export default async function DashboardPage() {
+export default async function PreseasonDashboardPage() {
   return (
     <div className="w-full h-full p-6 flex flex-col">
       <div>
@@ -58,8 +57,6 @@ export default async function DashboardPage() {
           checked={false}
         />
       </div>
-
-      <UserProvider isLoggedIn />
     </div>
   );
 }

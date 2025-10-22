@@ -4,13 +4,13 @@ import { WeatherApiResponse } from "@/app/(api)/api/weather/route";
 import { useCurrentTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import Icon, { IconType } from "./ui/icon";
+import Placeholder from "./ui/placeholder";
 import {
   WeatherLabel,
   WeatherValue,
   WeatherWidgetTitle,
 } from "./ui/typography";
-import Icon, { IconType } from "./ui/icon";
-import Placeholder from "./ui/placeholder";
 
 // TODO: get list of expected result and return icon type
 const getIconByWeatherCondition = (text: string): IconType => {
@@ -26,31 +26,7 @@ export const WeatherWidget: React.FC<{
   city: string;
   region: string;
 }> = ({ country, city, region, className }) => {
-  const [geolocation, setGeolocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-  const [geolocationError, setGeolocationError] = useState<string | null>(null);
-
   const [weather, setWeather] = useState<WeatherApiResponse | null>(null);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setGeolocation(position.coords);
-        },
-        (err) => {
-          setGeolocationError(err.message);
-          console.error(err.message);
-        },
-      );
-    } else {
-      setGeolocationError;
-      ("Geolocation is not supported by your browser.");
-      console.error("Geolocation is not supported by your browser.");
-    }
-  }, []);
 
   const time = useCurrentTime();
 

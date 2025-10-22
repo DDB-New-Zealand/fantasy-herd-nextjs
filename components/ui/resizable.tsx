@@ -74,16 +74,15 @@ export const ResizablePanelGroup: React.FC<
         targetX,
       );
 
-      if (
-        firstWidth < (memoRef.current.minSize[0] ?? 0) / 2 ||
-        (memoRef.current.minSize[0] ?? 0) + (memoRef.current.minSize[1] ?? 0) >
-          containerBox.width
-      ) {
-        firstWidth = 0;
-      } else if (
-        containerBox.width - (memoRef.current.minSize[1] ?? 0) <
-        firstWidth
-      ) {
+      // if (
+      //   firstWidth < (memoRef.current.minSize[0] ?? 0) / 2 ||
+      //   (memoRef.current.minSize[0] ?? 0) + (memoRef.current.minSize[1] ?? 0) >
+      //     containerBox.width
+      // ) {
+      //   firstWidth = 0;
+      // } else
+
+      if (containerBox.width - (memoRef.current.minSize[1] ?? 0) < firstWidth) {
         firstWidth = containerBox.width - (memoRef.current.minSize[1] ?? 0);
       } else {
         firstWidth = clamp(

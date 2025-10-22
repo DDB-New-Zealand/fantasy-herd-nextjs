@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { logoutUserServer } from "@/lib/cookie";
 
 const Debug: React.FC = () => {
   return (
@@ -19,6 +20,13 @@ const Debug: React.FC = () => {
         alignOffset={24}
       >
         <Button onClick={() => {}}>NEXT SEASON</Button>
+        <Button
+          onClick={() => {
+            logoutUserServer();
+          }}
+        >
+          Log out
+        </Button>
       </PopoverContent>
     </Popover>
   );
