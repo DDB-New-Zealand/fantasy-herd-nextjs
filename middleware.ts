@@ -1,27 +1,35 @@
-import { geolocation } from "@vercel/functions";
 import { NextRequest, NextResponse } from "next/server";
 
-// const geo = geolocation(req);
-
-// console.log(geo);
-
 export const config = {
-  matcher: ["/", "/geolocation"],
+  matcher: ["/", "/index"],
 };
 
-export async function middleware(req: NextRequest) {
-  const { nextUrl: url } = req;
-  const geo = geolocation(req);
+export function middleware(req: NextRequest) {
+  const basicAuth = req.headers.get("authorization");
+  const url = req.nextUrl;
 
-  const country = geo.country || "NZ";
-  const city = geo.city || "Auckland";
-  const region = geo.countryRegion || "AUK";
+  // Bypass the basic auth on a certain env variable and Pub IP
+  if (!process.env.BASIC_AUTH_USER || !process.env.BASIC_AUTH_PASSWORD) {
+    return;
+  }
 
-  const newUrl = new URL(url);
+  console.log(basicAuth);
 
-  newUrl.searchParams.set("country", country);
-  newUrl.searchParams.set("city", city);
-  newUrl.searchParams.set("region", region);
+  if (basicAuth) {
+    const authValue = basicAuth.split(" ")[1];
+    const [user, pwd] = atob(authValue).split(":");
 
-  return NextResponse.rewrite(newUrl);
+    console.log(authValue, user, pwd);
+
+    const validUser = process.env.BASIC_AUTH_USER;
+    const validPassWord = process.env.BASIC_AUTH_PASSWORD;
+
+    if (user === validUser && pwd === validPassWord) {
+      return NextResponse.next();
+    }
+  }
+
+  url.pathname = "/api/auth";
+
+  return NextResponse.rewrite(url);
 }
