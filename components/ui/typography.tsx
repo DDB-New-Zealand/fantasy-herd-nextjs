@@ -576,7 +576,7 @@ export const SummaryValueLabel: React.FC<Props> = (props) => {
   return (
     <Comp
       className={cn(
-        `font-paragraph text-[20px] leading-[82%] -tracking-[0.03em]`,
+        `font-paragraph text-[14px] leading-[82%] -tracking-[0.03em]`,
         className,
       )}
     >

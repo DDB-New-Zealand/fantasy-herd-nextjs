@@ -7,40 +7,32 @@ import {
   CowDraggableCardPlaceHolder,
   CowDraggableCardPlaceHolderField,
 } from "@/components/cow/draggable-cards";
-import { CowRow } from "@/components/cow/row";
 import { EnterHerdDrawer } from "@/components/enter-herd-drawer";
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import Icon from "@/components/ui/icon";
-import { Input } from "@/components/ui/input";
 import Placeholder from "@/components/ui/placeholder";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import {
-  PageTitle,
-  PlayerAreaLabel,
-  TableListHeader,
-} from "@/components/ui/typography";
+import { PageTitle, PlayerAreaLabel } from "@/components/ui/typography";
 import { Wallet } from "@/components/wallet";
-import { COW_DATA, CowData } from "@/constants/cows";
-import { cn } from "@/lib/utils";
-import useUserStore, { Herd, UserProvider } from "@/stores/user-store";
+import useUserStore, { UserProvider } from "@/stores/user-store";
 import { useState } from "react";
+import CowSelect from "./pre-season/cow-select";
+import Summary from "./pre-season/summary";
+import Icon from "@/components/ui/icon";
 
 export default function HerdPage() {
   const {
     herd,
     autoPickHerd,
     resetHerd,
-    addCowToHerd,
-    removeCowFromHerd,
     enterHerd,
+    currentSeason,
+    herdEntered,
   } = useUserStore();
 
-  const [cow, setCow] = useState<CowData | null>(null);
   const [openEnterHerd, setOpenEnterHerd] = useState(false);
 
   const benchedCows = Object.keys(herd)
@@ -80,88 +72,8 @@ export default function HerdPage() {
         defaultSize={[450, undefined]}
       >
         <ResizablePanel index={0}>
-          <div className="w-full h-full max-h-full overflow-y-auto p-6 pr-[25px]">
-            <PageTitle>Cow Select</PageTitle>
-            <Field className="mt-6">
-              <FieldLabel>Find a cow</FieldLabel>
-              <div className="relative">
-                <Input placeholder="Search by name, num, price or rating" />
-                <Icon
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5"
-                  type={"search"}
-                />
-              </div>
-            </Field>
-            <div className="mt-6">
-              <table
-                className={cn(
-                  "w-full",
-                  "[&_th:nth-child(3n-2)]:border-r [&_th:nth-child(3n-1)]:border-r [&_td:nth-child(3n-2)]:border-r [&_td:nth-child(3n-1)]:border-r",
-                  "[&_tr]:border-b",
-                )}
-              >
-                <thead>
-                  <tr>
-                    <TableListHeader className="h-[26px] w-full" asChild>
-                      <th>Name</th>
-                    </TableListHeader>
-                    <TableListHeader className="h-[26px]" asChild>
-                      <th>
-                        <div className="pl-3">Price</div>
-                      </th>
-                    </TableListHeader>
-                    <TableListHeader className="h-[26px]" asChild>
-                      <th>
-                        <div className="pl-3">Rating</div>
-                      </th>
-                    </TableListHeader>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COW_DATA.map((cow) => {
-                    const isAdded =
-                      benchedCows.some((c) => c.id === cow.id) ||
-                      starterCows.some((c) => c.id === cow.id);
-
-                    return (
-                      <CowRow
-                        key={cow.id}
-                        name={cow.name}
-                        price={cow.price}
-                        rating={cow.rating}
-                        onClickDetail={() => {
-                          setCow(cow);
-                        }}
-                        onAdd={() => {
-                          if (isAdded) {
-                            let herdKey: keyof Herd = "starter-1";
-
-                            for (const key in herd) {
-                              // herdKey =
-                              if (herd[key as keyof Herd]?.id === cow.id) {
-                                herdKey = key as keyof Herd;
-                              }
-                              break;
-                            }
-
-                            removeCowFromHerd(herdKey);
-                          } else {
-                            for (const key of Object.keys(herd)) {
-                              if (!herd[key as keyof Herd]) {
-                                addCowToHerd(cow, key as keyof Herd);
-                                break;
-                              }
-                            }
-                          }
-                        }}
-                        added={isAdded}
-                      />
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          {currentSeason === "pre-season" && !herdEntered && <CowSelect />}
+          {currentSeason === "pre-season" && herdEntered && <Summary />}
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel index={1}>
@@ -257,35 +169,63 @@ export default function HerdPage() {
                 )}
               </div>
               <div className="flex gap-3 items-center justify-center mt-9">
-                <Button
-                  variant={"outline"}
-                  className="border-foreground/24"
-                  onClick={() => {
-                    autoPickHerd();
-                  }}
-                >
-                  Auto pick
-                </Button>
-                <Button
-                  variant={"outline"}
-                  className="border-foreground/24"
-                  disabled={!hasSelected}
-                  onClick={() => {
-                    resetHerd();
-                  }}
-                >
-                  Reset
-                </Button>
-                <Button
-                  variant={"outline"}
-                  className="border-foreground/24"
-                  disabled={!hasHerdFilled}
-                  onClick={() => {
-                    setOpenEnterHerd(true);
-                  }}
-                >
-                  Enter Herd
-                </Button>
+                {currentSeason === "pre-season" && !herdEntered && (
+                  <>
+                    <Button
+                      variant={"outline"}
+                      className="border-foreground/24"
+                      onClick={() => {
+                        autoPickHerd();
+                      }}
+                    >
+                      Auto pick
+                    </Button>
+                    <Button
+                      variant={"outline"}
+                      className="border-foreground/24"
+                      disabled={!hasSelected}
+                      onClick={() => {
+                        resetHerd();
+                      }}
+                    >
+                      Reset
+                    </Button>
+                    <Button
+                      variant={"outline"}
+                      className="border-foreground/24"
+                      disabled={!hasHerdFilled}
+                      onClick={() => {
+                        setOpenEnterHerd(true);
+                      }}
+                    >
+                      Enter Herd
+                    </Button>
+                  </>
+                )}
+                {currentSeason === "pre-season" && herdEntered && (
+                  <>
+                    <Button
+                      variant={"outline"}
+                      className="border-foreground/24"
+                      disabled={!hasSelected}
+                      onClick={() => {
+                        // resetHerd();
+                      }}
+                    >
+                      Share your herd <Icon type="share" />
+                    </Button>
+                    <Button
+                      variant={"outline"}
+                      className="border-foreground/24"
+                      disabled={!hasHerdFilled}
+                      onClick={() => {
+                        // setOpenEnterHerd(true);
+                      }}
+                    >
+                      Edit your picks <Icon type="edit" />
+                    </Button>
+                  </>
+                )}
               </div>
               <div className="absolute left-[25px] right-6 bottom-[92px] top-0 pointer-events-none border-x border-b"></div>
               <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-background border h-[26px] px-3">
@@ -299,12 +239,7 @@ export default function HerdPage() {
       </ResizablePanelGroup>
 
       <UserProvider isLoggedIn />
-      <DetailDrawer
-        selectedData={cow}
-        setOpen={(open) => {
-          if (!open) setCow(null);
-        }}
-      />
+      <DetailDrawer />
       <EnterHerdDrawer
         open={openEnterHerd}
         onClose={() => {

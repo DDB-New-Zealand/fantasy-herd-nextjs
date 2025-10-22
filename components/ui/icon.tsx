@@ -20,7 +20,9 @@ export type IconType =
   | "search"
   | "plus"
   | "chevron"
-  | "info";
+  | "info"
+  | "edit"
+  | "share";
 
 type Props = {
   type: IconType;

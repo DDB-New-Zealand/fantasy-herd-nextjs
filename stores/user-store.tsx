@@ -18,6 +18,7 @@ export type Herd = {
 };
 interface UserState {
   isLoggedIn: boolean | null;
+  userName: string;
 
   currentSeason: "pre-season" | "in-season" | "post-season";
 
@@ -34,11 +35,12 @@ interface UserState {
 const useUserStore = create<UserState>((set) => ({
   // logged in status
   isLoggedIn: null,
+  userName: "Username",
 
   // seasons
   currentSeason: "pre-season",
 
-  // cows
+  // herd
   herdName: "",
   herdEntered: false,
   herd: {

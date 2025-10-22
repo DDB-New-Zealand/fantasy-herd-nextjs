@@ -6,6 +6,7 @@ import { Rating } from "../rating";
 import Icon from "../ui/icon";
 import Placeholder from "../ui/placeholder";
 import { TableListTitle, TableValue } from "../ui/typography";
+import { useCowDetailStore } from "@/stores/cow-detail-store";
 
 type Props = {
   name: string;
@@ -56,7 +57,7 @@ export const CowRow: React.FC<Props> = ({
           <TableValue asChild>
             <div className="pl-3">
               <div className="w-fit flex items-center">
-                <Rating rating={rating} />
+                <Rating size="table" rating={rating} />
                 <div className="w-[20px] h-[20px]  ml-3"></div>
               </div>
             </div>

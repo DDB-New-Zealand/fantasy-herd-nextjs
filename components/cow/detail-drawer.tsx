@@ -24,11 +24,7 @@ import {
   PlayerDetailTitle,
   PlayerDetailValue,
 } from "../ui/typography";
-
-type Props = {
-  selectedData: CowData | null;
-  setOpen: (open: boolean) => void;
-};
+import { useCowDetailStore } from "@/stores/cow-detail-store";
 
 const P_DATA = [
   {
@@ -55,22 +51,22 @@ const P_DATA = [
   },
 ];
 
-export const DetailDrawer: React.FC<Props> = (props) => {
-  const { selectedData, setOpen } = props;
+export const DetailDrawer: React.FC = () => {
+  const { cowData, setCowData } = useCowDetailStore();
 
-  const [data, setData] = useState<CowData | null>(selectedData);
+  const [data, setData] = useState<CowData | null>(cowData);
   useEffect(() => {
-    if (selectedData) setData(selectedData);
-  }, [selectedData]);
+    if (cowData) setData(cowData);
+  }, [cowData]);
 
   return (
     <Sheet
-      open={!!selectedData}
+      open={!!cowData}
       onOpenChange={(open) => {
         delay(() => {
           setData(null);
         }, 0.3);
-        setOpen(open);
+        setCowData(null);
       }}
     >
       <SheetPortal>
