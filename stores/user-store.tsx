@@ -36,8 +36,9 @@ interface UserState {
   resetHerd: () => void;
   addCowToHerd: (cow: CowData, slot: keyof Herd) => void;
   removeCowFromHerd: (slot: keyof Herd) => void;
-  enterHerd: (herd: string) => void;
+  enterHerd: (herdName: string) => void;
   editHerd: () => void;
+  updateHerdName: (herdName: string) => void;
 }
 
 const useUserStore = create<UserState>()(
@@ -119,11 +120,14 @@ const useUserStore = create<UserState>()(
         },
       }));
     },
-    enterHerd: (herd: string) => {
-      set({ herdEntered: true, herdName: herd });
+    enterHerd: (herdName: string) => {
+      set({ herdEntered: true, herdName });
     },
     editHerd: () => {
       set({ herdEntered: false });
+    },
+    updateHerdName: (herdName: string) => {
+      set({ herdName });
     },
   })),
 );
