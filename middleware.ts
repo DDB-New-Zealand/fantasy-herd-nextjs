@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
 
   // Bypass the basic auth on a certain env variable and Pub IP
   if (!process.env.BASIC_AUTH_USER || !process.env.BASIC_AUTH_PASSWORD) {
-    return;
+    return NextResponse.next();
   }
 
   if (basicAuth) {
