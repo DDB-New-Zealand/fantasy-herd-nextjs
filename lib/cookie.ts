@@ -80,12 +80,12 @@ export const logoutUserServer = async () => {
   await deleteServerCookie(COOKIE_KEYS.USER_DATA);
 };
 
-export const loginUserServer = async () => {
+export const loginUserServer = async (username: string) => {
   // Mock login implementation
   const mockAuthToken = "mock-auth-token-123456";
   const mockUserData: User = {
     isLoggedIn: true,
-    userName: "MockUser",
+    username: username,
   };
 
   await setServerCookie(COOKIE_KEYS.AUTH_TOKEN, mockAuthToken, {

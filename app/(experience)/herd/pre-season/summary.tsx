@@ -11,7 +11,7 @@ import {
 import useUserStore from "@/stores/user-store";
 
 export default function Summary() {
-  const { herdName, userName } = useUserStore();
+  const { herdName, username } = useUserStore();
 
   return (
     <div className="w-full h-full max-h-full overflow-y-auto p-6 pr-[25px]">
@@ -28,7 +28,7 @@ export default function Summary() {
             <div className="flex items-center justify-center gap-2.5">
               {/* Flag */}
               <Placeholder className="w-[28px] h-[22px]" />
-              <SummaryLabel>{userName}</SummaryLabel>
+              <SummaryLabel>{username}</SummaryLabel>
             </div>
             <div>
               <Placeholder className="w-[38px] h-[38px]" />

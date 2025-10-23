@@ -1,13 +1,18 @@
+"use client";
+
 import { Banner } from "@/components/banner";
 import { CheckCard } from "@/components/checkcard";
 import Icon from "@/components/ui/icon";
 import { PageDescription, PageTitle } from "@/components/ui/typography";
+import useUserStore from "@/stores/user-store";
 
-export default async function PreseasonDashboardPage() {
+export default function PreseasonDashboardPage() {
+  const { username } = useUserStore();
+
   return (
     <div className="w-full h-full p-6 flex flex-col">
       <div>
-        <PageTitle>Welcome to fantasy herd, User123</PageTitle>
+        <PageTitle>Welcome to fantasy herd, {username}</PageTitle>
         <PageDescription className="mt-6">
           Here’s some things to get you started!
         </PageDescription>

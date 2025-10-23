@@ -22,7 +22,12 @@ export type IconType =
   | "chevron"
   | "info"
   | "edit"
-  | "share";
+  | "share"
+  | "google"
+  | "facebook"
+  | "apple"
+  | "X"
+  | "sign-out";
 
 type Props = {
   type: IconType;

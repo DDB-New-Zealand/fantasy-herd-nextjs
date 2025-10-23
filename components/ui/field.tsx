@@ -116,7 +116,7 @@ function FieldLabel({
       data-slot="field-label"
       className={cn(
         "group/field-label peer/field-label",
-        "font-paragraph text-[14px] leading-[82%] tracking-[0.04em]",
+        "font-paragraph text-[14px] leading-[132%] -tracking-[0.03em]",
         className,
       )}
       {...props}

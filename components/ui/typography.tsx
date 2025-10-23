@@ -194,6 +194,23 @@ export const PageTitle: React.FC<Props> = (props) => {
   );
 };
 
+export const PageTitleBig: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "h1";
+
+  return (
+    <Comp
+      className={cn(
+        `font-title text-[80px] leading-[74%] tracking-[0em] text-center`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
 export const PageDescription: React.FC<Props> = (props) => {
   const { className, asChild, children } = props;
 
@@ -798,6 +815,23 @@ export const AlertBannerParagraph: React.FC<Props> = (props) => {
     <Comp
       className={cn(
         `font-paragraph text-center text-[14px] leading-[128%] -tracking-[0.03em] uppercase`,
+        className,
+      )}
+    >
+      {children}
+    </Comp>
+  );
+};
+
+export const SignUpFooterLabel: React.FC<Props> = (props) => {
+  const { className, asChild, children } = props;
+
+  const Comp = asChild ? Slot : "span";
+
+  return (
+    <Comp
+      className={cn(
+        `font-paragraph text-center text-[12px] leading-[128%] -tracking-[0.03em]`,
         className,
       )}
     >

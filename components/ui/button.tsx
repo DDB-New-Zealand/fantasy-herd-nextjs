@@ -18,12 +18,15 @@ const buttonVariants = cva(
         outline:
           "border-foreground/24 border text-foreground hover:bg-foreground/4 disabled:bg-transparent disabled:text-foreground/24",
         pattern: "bg-foreground text-background hover:bg-foreground/80",
+        underline: "underline hover:opacity-50",
       },
       size: {
         default:
           "w-full h-[44px] font-paragraph text-[14px] leading-[82%] -tracking-[0.03em]",
+        lg: "w-full h-[48px] font-paragraph text-[14px] leading-[82%] -tracking-[0.03em]",
         fixed:
           "py-[14px] w-[146px] text-[16px] font-paragraph text-[16px] leading-[128%] -tracking-[0.03em]",
+        link: "",
       },
     },
     defaultVariants: {

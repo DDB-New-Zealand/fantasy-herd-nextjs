@@ -20,12 +20,12 @@ export type Herd = {
 
 export type User = {
   isLoggedIn: boolean | null;
-  userName: string;
+  username: string;
 };
 
 interface UserState {
   isLoggedIn: boolean | null;
-  userName: string;
+  username: string;
 
   currentSeason: "pre-season" | "in-season" | "post-season";
 
@@ -37,13 +37,14 @@ interface UserState {
   addCowToHerd: (cow: CowData, slot: keyof Herd) => void;
   removeCowFromHerd: (slot: keyof Herd) => void;
   enterHerd: (herd: string) => void;
+  editHerd: () => void;
 }
 
 const useUserStore = create<UserState>()(
   logger((set) => ({
     // logged in status
     isLoggedIn: null,
-    userName: "Username",
+    username: "Username",
 
     // seasons
     currentSeason: "pre-season",
@@ -121,6 +122,9 @@ const useUserStore = create<UserState>()(
     enterHerd: (herd: string) => {
       set({ herdEntered: true, herdName: herd });
     },
+    editHerd: () => {
+      set({ herdEntered: false });
+    },
   })),
 );
 
@@ -130,7 +134,7 @@ export const UserProvider: React.FC<{ user: User | null }> = (props) => {
 
     useUserStore.setState({
       isLoggedIn: user?.isLoggedIn || false,
-      userName: user?.userName || "",
+      username: user?.username || "",
     });
   }, [props]);
 

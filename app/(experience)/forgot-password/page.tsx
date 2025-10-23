@@ -1,6 +1,6 @@
 import { isUserLoggedInServer } from "@/lib/cookie";
 import { redirect } from "next/navigation";
-import SignInPage from "./sign-in";
+import ForgotPasswordPage from "./forgot-password";
 
 type Props = {
   searchParams: Promise<{
@@ -17,5 +17,5 @@ export default async function Page({ searchParams }: Props) {
     redirect(redirectPath || "/");
   }
 
-  return <SignInPage />;
+  return <ForgotPasswordPage />;
 }

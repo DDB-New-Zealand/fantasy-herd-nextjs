@@ -1,6 +1,6 @@
 import { isUserLoggedInServer } from "@/lib/cookie";
-import HerdPage from "./pre-season/pre-season-page";
 import { redirect } from "next/navigation";
+import AccountSettingsPage from "./account-settings";
 
 export default async function Page() {
   const isLoggedIn = await isUserLoggedInServer();
@@ -9,5 +9,5 @@ export default async function Page() {
     redirect("/");
   }
 
-  return <HerdPage />;
+  return <AccountSettingsPage />;
 }

@@ -45,7 +45,7 @@ export default function Home() {
               </Button>
             </Link>
             <Button variant={"outline-hard"} size={"fixed"} asChild>
-              <Link href={"/register"}>Register Now</Link>
+              <Link href={"/sign-up"}>Register Now</Link>
             </Button>
           </div>
         </div>

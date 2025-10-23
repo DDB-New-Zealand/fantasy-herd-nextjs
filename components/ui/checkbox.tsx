@@ -1,8 +1,9 @@
 "use client";
 
-import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { CheckIcon } from "lucide-react";
+import * as React from "react";
+import { Label } from "./label";
 
 import { cn } from "@/lib/utils";
 
@@ -30,4 +31,21 @@ function Checkbox({
   );
 }
 
-export { Checkbox };
+function CheckboxLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof Label>) {
+  return (
+    <Label
+      data-slot="checkbox-label"
+      className={cn(
+        "group/field-label peer/field-label",
+        "font-paragraph text-[12px] leading-[144%] -tracking-[0]",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export { Checkbox, CheckboxLabel };

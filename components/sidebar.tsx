@@ -78,7 +78,7 @@ export const Sidebar: React.FC = () => {
       path === "/scan" ||
       path === "/prizes" ||
       path === "/help" ||
-      path === "/user"
+      path === "/account"
     );
   };
 
@@ -120,13 +120,15 @@ export const Sidebar: React.FC = () => {
           />
         </Link>
         <hr />
-        <Link href={"/scan"}>
-          <SidebarButtonRender
-            label={"Scan"}
-            icon={"scan"}
-            selected={path === "/scan"}
-          />
-        </Link>
+        {isLoggedIn && (
+          <Link href={"/scan"}>
+            <SidebarButtonRender
+              label={"Scan"}
+              icon={"scan"}
+              selected={path === "/scan"}
+            />
+          </Link>
+        )}
         <Link href={"/prizes"}>
           <SidebarButtonRender
             label={"Prizes"}
@@ -145,13 +147,15 @@ export const Sidebar: React.FC = () => {
       </div>
       <div>
         <ThemeButton />
-        <Link href={"/user"}>
-          <SidebarButtonRender
-            label={"user"}
-            icon={"user"}
-            selected={path === "/user"}
-          />
-        </Link>
+        {isLoggedIn && (
+          <Link href={"/account"}>
+            <SidebarButtonRender
+              label={"user"}
+              icon={"user"}
+              selected={path === "/account"}
+            />
+          </Link>
+        )}
       </div>
     </header>
   );
