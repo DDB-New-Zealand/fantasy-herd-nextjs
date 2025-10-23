@@ -10,14 +10,9 @@ const COOKIE_KEYS = {
 
 // Server-side cookie functions (Next.js server components/API routes)
 export const getServerCookie = async (name: string): Promise<string | null> => {
-  try {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.get(name);
-    return cookie?.value || null;
-  } catch (error) {
-    console.error("Failed to get server cookie:", error);
-    return null;
-  }
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(name);
+  return cookie?.value || null;
 };
 
 export const setServerCookie = async (
